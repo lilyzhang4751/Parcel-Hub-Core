@@ -1,8 +1,7 @@
 package com.lily.parcelhubcore;
 
-import com.lily.parcelhubcore.infrastructure.persistence.repository.WaybillRegistryRepository;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
 import jakarta.annotation.Resource;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
