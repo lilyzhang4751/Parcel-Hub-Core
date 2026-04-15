@@ -1,15 +1,15 @@
 package com.lily.parcelhubcore.parcel.domain.service;
 
-import com.lily.parcelhubcore.parcel.domain.dto.InParcelPackDTO;
-import com.lily.parcelhubcore.parcel.domain.enums.ErrorCode;
+import com.lily.parcelhubcore.parcel.domain.dto.ParcelPackDTO;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelOpRecordRepository;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
+import com.lily.parcelhubcore.parcel.shared.enums.ErrorCode;
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
 import jakarta.annotation.Resource;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class ParcelBaseService {
@@ -32,16 +32,12 @@ public class ParcelBaseService {
     }
 
     @Transactional
-    public void updateDBAndSendMsg(InParcelPackDTO packDTO) {
-        waybillRegistryRepository.save(packDTO.getWaybillRegistryDO());
-       // parcelOpRecordRepository.save(packDTO.getParcelOpRecordDO());
-        if (packDTO.getInsertParcelDO() != null) {
-            parcelRepository.save(packDTO.getInsertParcelDO());
+    public void updateDBAndSendMsg(ParcelPackDTO packDTO) {
+        if (packDTO.getWaybillRegistryDO() != null) {
+            waybillRegistryRepository.save(packDTO.getWaybillRegistryDO());
         }
-        if (packDTO.getUpdateParcelDO() != null) {
-            // 有id插入
-            parcelRepository.save(packDTO.getUpdateParcelDO());
-        }
+        parcelRepository.save(packDTO.getParcelDO());
+        parcelOpRecordRepository.save(packDTO.getParcelOpRecordDO());
         // todo 发送msg
     }
 

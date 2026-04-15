@@ -1,5 +1,7 @@
 package com.lily.parcelhubcore.shared.handler;
 
+import static com.lily.parcelhubcore.shared.exception.ErrorCode.AUTHENTICATION_FAILED;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +30,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         // 构建统一 JSON 错误响应
         Map<String, Object> errorBody = new HashMap<>();
         errorBody.put("code", 401);
-        errorBody.put("message", "认证失败，请重新登录");
+        errorBody.put("message", AUTHENTICATION_FAILED.getMessage());
         errorBody.put("timestamp", System.currentTimeMillis());
 
         // 写入响应体

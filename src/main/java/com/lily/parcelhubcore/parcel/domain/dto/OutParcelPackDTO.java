@@ -3,19 +3,20 @@ package com.lily.parcelhubcore.parcel.domain.dto;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelDO;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelOpRecordDO;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.WaybillRegistryDO;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class InParcelPackDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class OutParcelPackDTO {
 
-    private WaybillRegistryDO waybillRegistryDO;
-
-    private ParcelDO insertParcelDO;
+    private WaybillRegistryDO updateWaybillRegistryDO;
 
     private ParcelDO updateParcelDO;
 
     private ParcelOpRecordDO parcelOpRecordDO;
-
 }

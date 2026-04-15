@@ -11,12 +11,16 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "user_info")
+@DynamicInsert
+@DynamicUpdate
 public class UserInfoDO {
 
     @Id
@@ -26,35 +30,20 @@ public class UserInfoDO {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "station_code")
     private String stationCode;
-
-    @Column(name = "mobile")
-    private String mobile;
-
-    @Column(name = "identity_card")
-    private String identityCard;
 
     @Column(name = "role")
     private String role;
 
     @Column(name = "status")
-    private Short status;
-
-    @Column(name = "hire_time")
-    private Instant hireTime;
-
-    @Column(name = "resign_time")
-    private Instant resignTime;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "last_login_time")
-    private Instant lastLoginTime;
+    private Integer status;
 
     @Column(name = "created_at")
     private Instant createdAt;

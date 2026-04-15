@@ -10,8 +10,7 @@ public enum OperateTypeEnum {
     IN(100, "入库"),
     OUT(200, "出库"),
     RETURN(300, "退回"),
-    TRANSFER(400, "移库"),
-    INVENTORY(500, "盘库");
+    TRANSFER(400, "移库");
 
     private final Integer code;
     private final String desc;

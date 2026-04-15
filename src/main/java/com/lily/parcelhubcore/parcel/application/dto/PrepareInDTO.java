@@ -3,7 +3,7 @@ package com.lily.parcelhubcore.parcel.application.dto;
 import lombok.Data;
 
 @Data
-public class prepareInDTO {
+public class PrepareInDTO {
 
     private String waybillCode;
 

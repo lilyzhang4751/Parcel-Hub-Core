@@ -1,6 +1,6 @@
-package com.lily.parcelhubcore.station.infrastructure.persistence.repository;
+package com.lily.parcelhubcore.user.infrastructure.persistence.repository;
 
-import com.lily.parcelhubcore.station.infrastructure.persistence.entity.StationInfoDO;
+import com.lily.parcelhubcore.user.infrastructure.persistence.entity.StationInfoDO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -10,5 +10,6 @@ public interface StationInfoRepository extends JpaRepository<StationInfoDO, Long
 
     boolean existsByCode(String code);
 
+    boolean existsByCodeAndStatus(String code, Integer status);
     // 可根据需要添加更多查询方法
 }

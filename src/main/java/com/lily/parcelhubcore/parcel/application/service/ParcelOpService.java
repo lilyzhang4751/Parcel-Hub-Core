@@ -2,19 +2,17 @@ package com.lily.parcelhubcore.parcel.application.service;
 
 import com.lily.parcelhubcore.parcel.application.command.ParcelInBoundCommand;
 import com.lily.parcelhubcore.parcel.application.command.PrepareInCommand;
-import com.lily.parcelhubcore.parcel.application.dto.prepareInDTO;
+import com.lily.parcelhubcore.parcel.application.dto.PrepareInDTO;
+import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 
 public interface ParcelOpService {
 
-    public prepareInDTO prepareIn(PrepareInCommand bo);
+    public PrepareInDTO prepareIn(PrepareInCommand bo);
 
     public void inbound(ParcelInBoundCommand command);
 
-    public void outBound();
+    public void outBoundOrReturn(String waybillCode, OperateTypeEnum operateTypeEnum);
 
-    public void returned();
+    public void transfer(String waybillCode, String shelfCode);
 
-    public void transfer();
-
-    public void inventory();
 }

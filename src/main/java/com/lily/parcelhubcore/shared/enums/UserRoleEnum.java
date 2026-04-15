@@ -3,7 +3,7 @@ package com.lily.parcelhubcore.shared.enums;
 import lombok.Getter;
 
 @Getter
-public enum UserRole {
+public enum UserRoleEnum {
 
     MANAGER("MANAGER", "管理员"),
     STAFF("STAFF", "员工");
@@ -11,7 +11,7 @@ public enum UserRole {
     private final String role;
     private final String desc;
 
-    UserRole(String role, String desc) {
+    UserRoleEnum(String role, String desc) {
         this.role = role;
         this.desc = desc;
     }

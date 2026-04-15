@@ -28,7 +28,7 @@ class ParcelHubCoreApplicationTests {
 
     @Test
     void contextLoads() {
-        var user = userInfoRepository.findByUserName("lily");
+        var user = userInfoRepository.findByUsername("lily");
         System.out.println(user);
 
         var encoder = new BCryptPasswordEncoder();

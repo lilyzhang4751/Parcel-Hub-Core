@@ -11,10 +11,10 @@ public enum WaybillStatusEnum {
     OUTBOUND(20, "已出库"),
     RETURNED(30, "已退回");
 
-    private final Integer code;
+    private final int code;
     private final String desc;
 
-    WaybillStatusEnum(Integer code, String desc) {
+    WaybillStatusEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

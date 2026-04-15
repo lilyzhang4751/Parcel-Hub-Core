@@ -2,25 +2,35 @@ package com.lily.parcelhubcore.parcel.application.service.impl;
 
 import static com.lily.parcelhubcore.parcel.shared.common.Constants.LOCK_TIME;
 import static com.lily.parcelhubcore.parcel.shared.common.Constants.PICKUP_CACHE_HOURS;
+import static com.lily.parcelhubcore.parcel.shared.enums.ErrorCode.PARCEL_NOT_EXIST;
+import static com.lily.parcelhubcore.parcel.shared.enums.ErrorCode.PARCEL_NOT_INBOUND;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import com.lily.parcelhubcore.parcel.application.command.ParcelInBoundCommand;
 import com.lily.parcelhubcore.parcel.application.command.PrepareInCommand;
-import com.lily.parcelhubcore.parcel.application.dto.prepareInDTO;
+import com.lily.parcelhubcore.parcel.application.dto.PrepareInDTO;
 import com.lily.parcelhubcore.parcel.application.service.ParcelOpService;
-import com.lily.parcelhubcore.parcel.domain.enums.ErrorCode;
-import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.parcel.domain.service.PackageBuilder;
 import com.lily.parcelhubcore.parcel.domain.service.ParcelBaseService;
 import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelDO;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
 import com.lily.parcelhubcore.parcel.shared.common.KeyConstants;
+import com.lily.parcelhubcore.parcel.shared.enums.ErrorCode;
 import com.lily.parcelhubcore.parcel.shared.util.CommonUtil;
+import com.lily.parcelhubcore.shared.cache.CacheService;
+import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
+import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
+import com.lily.parcelhubcore.shared.enums.WaybillStatusEnum;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.shared.lock.Lock;
+import com.lily.parcelhubcore.shared.util.CurrentUserUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,14 +54,14 @@ public class ParcelOpServiceImpl implements ParcelOpService {
     @Resource
     private PackageBuilder packageBuilder;
 
+    @Resource
+    private WaybillRegistryRepository waybillRegistryRepository;
+
     @Override
-    public prepareInDTO prepareIn(PrepareInCommand bo) {
+    public PrepareInDTO prepareIn(PrepareInCommand bo) {
         // todo 参数格式校验
-        var dto = new prepareInDTO();
-        dto.setWaybillCode(bo.getWaybillCode());
-        dto.setRecipientMobile(bo.getRecipientMobile());
-        dto.setRecipientName(bo.getRecipientName());
-        dto.setShelfCode(bo.getShelfCode());
+        var dto = new PrepareInDTO();
+        BeanUtils.copyProperties(bo, dto);
 
         var stationCode = bo.getStationCode();
         var waybillCode = bo.getWaybillCode();
@@ -101,10 +111,8 @@ public class ParcelOpServiceImpl implements ParcelOpService {
             parcelBaseService.waybillInBoundVerify(waybillCode);
             // 校验取件码是否有重复；
             pickupCodeService.pickupCodeExistVerify(stationCode, command.getPickupCode());
-            // 查看包裹是首次入库还是多次入库
-            var oldParcel = parcelRepository.findFirstByStationCodeAndWaybillCode(stationCode, waybillCode);
             // 构建数据库操作对象和消息体
-            var packDTO = packageBuilder.buildInParcelPackDTO(command, oldParcel);
+            var packDTO = packageBuilder.buildInParcelPackDTO(command);
             // 事务内更新数据库，发送消息
             parcelBaseService.updateDBAndSendMsg(packDTO);
             // 删除该运单号的取件码缓存
@@ -115,22 +123,64 @@ public class ParcelOpServiceImpl implements ParcelOpService {
     }
 
     @Override
-    public void outBound() {
+    public void outBoundOrReturn(String waybillCode, OperateTypeEnum operateTypeEnum) {
+        // add lock
+        var lockKey = KeyConstants.getWaybillCodeLock(waybillCode);
+        try {
+            if (!lock.tryLock(lockKey, LOCK_TIME, TimeUnit.MILLISECONDS)) {
+                throw new BusinessException(ErrorCode.CURRENT_EXCEPTION);
+            }
+            var stationCode = CurrentUserUtil.getStationCode();
+            // 查询注册表状态是否正常
+            var waybillRegistry = waybillRegistryRepository.findByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode());
+            if (waybillRegistry == null || !Objects.equals(waybillRegistry.getStationCode(), stationCode)) {
+                throw new BusinessException(PARCEL_NOT_EXIST);
+            }
 
+            // 查询包裹是否存在
+            var parcel = getParcelDO(stationCode, waybillCode);
+            // 构建数据库操作对象和消息体
+            var packDTO = packageBuilder.buildParcelPackByType(waybillRegistry, parcel, operateTypeEnum);
+            // 事务内更新数据库，发送消息
+            parcelBaseService.updateDBAndSendMsg(packDTO);
+        } finally {
+            lock.unlock(lockKey);
+        }
     }
 
     @Override
-    public void returned() {
-
+    public void transfer(String waybillCode, String shelfCode) {
+        // add lock
+        var lockKey = KeyConstants.getWaybillCodeLock(waybillCode);
+        try {
+            if (!lock.tryLock(lockKey, LOCK_TIME, TimeUnit.MILLISECONDS)) {
+                throw new BusinessException(ErrorCode.CURRENT_EXCEPTION);
+            }
+            var stationCode = CurrentUserUtil.getStationCode();
+            // 查询包裹是否存在
+            var parcel = getParcelDO(stationCode, waybillCode);
+            // 移库重新生成取件码
+            //  生成取件码
+            var newPickupCode = pickupCodeService.genarate(stationCode, shelfCode);
+            // 构建数据库操作对象和消息体
+            var packDTO = packageBuilder.buildTransferParcelPackDTO(parcel, shelfCode, newPickupCode);
+            // 事务内更新数据库，发送消息
+            parcelBaseService.updateDBAndSendMsg(packDTO);
+        } finally {
+            lock.unlock(lockKey);
+        }
     }
 
-    @Override
-    public void transfer() {
-
-    }
-
-    @Override
-    public void inventory() {
-
+    private ParcelDO getParcelDO(String stationCode, String waybillCode) {
+// 查询包裹是否存在
+        var parcel = parcelRepository.findFirstByStationCodeAndWaybillCode(stationCode, waybillCode);
+        if (parcel == null) {
+            throw new BusinessException(PARCEL_NOT_EXIST);
+        }
+        // 包裹是否还在库
+        if (!Objects.equals(parcel.getStatus(), WaybillStatusEnum.INBOUND.getCode())) {
+            throw new BusinessException(PARCEL_NOT_INBOUND);
+        }
+        return parcel;
     }
 }

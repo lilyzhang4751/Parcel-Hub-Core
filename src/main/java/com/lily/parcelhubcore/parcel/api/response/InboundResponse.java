@@ -3,6 +3,7 @@ package com.lily.parcelhubcore.parcel.api.response;
 import java.io.Serial;
 import java.io.Serializable;
 
+import com.lily.parcelhubcore.shared.response.OpResultResponse;
 import lombok.Data;
 
 @Data

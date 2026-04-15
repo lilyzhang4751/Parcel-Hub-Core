@@ -35,21 +35,11 @@ public class ParcelOpRecordDO {
     @Column(name = "op_type")
     private Integer opType;
 
-    // todo 上下文信息
-    @Column(name = "operator_id")
-    private Long operatorId;
+    @Column(name = "operator_code")
+    private String operatorCode;
 
     @Column(name = "operator_name")
     private String operatorName;
-
-    @Column(name = "device_type")
-    private Integer deviceType;
-
-    @Column(name = "device_id")
-    private String deviceId;
-
-    @Column(name = "user_agent")
-    private String userAgent;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;

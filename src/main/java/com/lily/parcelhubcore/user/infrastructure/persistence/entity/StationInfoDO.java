@@ -1,21 +1,30 @@
-package com.lily.parcelhubcore.station.infrastructure.persistence.entity;
+package com.lily.parcelhubcore.user.infrastructure.persistence.entity;
 
-import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-
-import java.math.BigDecimal;
-import java.time.LocalTime;
-import java.time.Instant;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "station_info")
+@DynamicInsert
+@DynamicUpdate
 public class StationInfoDO {
 
     @Id
@@ -36,12 +45,6 @@ public class StationInfoDO {
 
     @Column(name = "contact_mobile")
     private String contactMobile;
-
-    @Column(name = "deposit")
-    private BigDecimal deposit;
-
-    @Column(name = "address")
-    private String address;
 
     @Column(name = "active_time")
     private Instant activeTime;

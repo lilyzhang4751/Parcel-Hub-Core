@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.lily.parcelhubcore.parcel.domain.enums.ErrorCode;
+import com.lily.parcelhubcore.parcel.shared.enums.ErrorCode;
 import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelDO;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;

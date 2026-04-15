@@ -49,9 +49,10 @@ public class SecurityConfig {
                 // 设置会话为无状态（JWT 场景）
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 3. 权限配置（关键修正）
+                // 3. 权限配置
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/hello").permitAll() // 允许所有人访问
+                        .requestMatchers("/user/register", "/station/register").permitAll()
                         .requestMatchers("/user/login").anonymous()  //  未登录状态才能访问
                         .anyRequest().authenticated()
                 )

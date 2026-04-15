@@ -1,8 +1,12 @@
 package com.lily.parcelhubcore.user.application.service;
 
+import com.lily.parcelhubcore.user.application.command.UserRegisterCommand;
+
 public interface LoginService {
 
-    String login(String userName, String password);
+    void register(UserRegisterCommand command);
+
+    String login(String username, String password);
 
     void logout();
 }

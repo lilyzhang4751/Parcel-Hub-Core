@@ -1,5 +1,6 @@
 package com.lily.parcelhubcore.shared.authentication.dto;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,16 @@ import org.springframework.util.CollectionUtils;
 @NoArgsConstructor
 public class LoginUser implements UserDetails {
 
-    private UserInfoDO user;
+    @Serial
+    private static final long serialVersionUID = 1472889745732496358L;
+
+    private String userCode;
+
+    private String username;
+
+    private String password;
+
+    private String stationCode;
 
     private List<String> permissions;
 
@@ -29,7 +39,10 @@ public class LoginUser implements UserDetails {
     private List<GrantedAuthority> authorities;
 
     public LoginUser(UserInfoDO user, List<String> permissions) {
-        this.user = user;
+        this.userCode = user.getCode();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.stationCode = user.getStationCode();
         this.permissions = permissions;
     }
 
@@ -45,11 +58,11 @@ public class LoginUser implements UserDetails {
 
     @Override
     public @Nullable String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getUserName();
+        return username;
     }
 }

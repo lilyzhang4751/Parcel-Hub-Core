@@ -3,6 +3,7 @@ package com.lily.parcelhubcore.shared.filter;
 import java.io.IOException;
 import java.util.Objects;
 
+import com.alibaba.fastjson2.JSON;
 import com.lily.parcelhubcore.shared.authentication.dto.LoginUser;
 import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.shared.constants.KeyConstants;
@@ -33,7 +34,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         // 解析token
         var claims = JwtUtils.parseToken(token);
         var userCode = claims.getSubject();
