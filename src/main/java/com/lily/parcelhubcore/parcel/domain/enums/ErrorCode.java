@@ -5,6 +5,8 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
 
+    USER_NOT_EXIST("USER_NOT_EXIST", "用户名或密码错误"),
+
     CURRENT_EXCEPTION("LOCK_FAILED", "当前包裹正在操作，请稍后重试"),
     PARCEL_EXIST("PARCEL_EXIST", "当前包裹已入库，无法操作"),
     NO_AVAILABLE_PICKUP("NO_AVAILABLE_PICKUP", "没有可用取件码，请修改货架号"),

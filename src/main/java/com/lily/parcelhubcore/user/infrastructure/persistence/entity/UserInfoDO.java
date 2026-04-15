@@ -1,18 +1,23 @@
 package com.lily.parcelhubcore.user.infrastructure.persistence.entity;
 
-import jakarta.persistence.*;
+import java.time.Instant;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.Instant;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user")
-public class UserDO {
+@Table(name = "user_info")
+public class UserInfoDO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +26,8 @@ public class UserDO {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "user_name")
+    private String userName;
 
     @Column(name = "station_code")
     private String stationCode;
@@ -34,7 +39,7 @@ public class UserDO {
     private String identityCard;
 
     @Column(name = "role")
-    private Short role;
+    private String role;
 
     @Column(name = "status")
     private Short status;

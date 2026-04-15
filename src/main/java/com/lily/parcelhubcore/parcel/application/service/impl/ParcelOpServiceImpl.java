@@ -10,7 +10,7 @@ import com.lily.parcelhubcore.parcel.application.command.PrepareInCommand;
 import com.lily.parcelhubcore.parcel.application.dto.prepareInDTO;
 import com.lily.parcelhubcore.parcel.application.service.ParcelOpService;
 import com.lily.parcelhubcore.parcel.domain.enums.ErrorCode;
-import com.lily.parcelhubcore.parcel.domain.service.CacheService;
+import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.parcel.domain.service.PackageBuilder;
 import com.lily.parcelhubcore.parcel.domain.service.ParcelBaseService;
 import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;

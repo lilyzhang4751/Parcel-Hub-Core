@@ -5,14 +5,14 @@ import lombok.Getter;
 @Getter
 public enum UserRole {
 
-    ADMIN(0, "管理员"),
-    OPERATOR(1, "员工");
+    MANAGER("MANAGER", "管理员"),
+    STAFF("STAFF", "员工");
 
-    private final Integer code;
+    private final String role;
     private final String desc;
 
-    UserRole(Integer code, String desc) {
-        this.code = code;
+    UserRole(String role, String desc) {
+        this.role = role;
         this.desc = desc;
     }
 }

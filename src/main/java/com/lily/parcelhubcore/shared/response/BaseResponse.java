@@ -1,4 +1,4 @@
-package com.lily.parcelhubcore.parcel.api.response;
+package com.lily.parcelhubcore.shared.response;
 
 import lombok.Getter;
 
@@ -17,6 +17,10 @@ public class BaseResponse<T> {
         this.message = message;
         this.data = data;
         this.error = error;
+    }
+
+    public static <T> BaseResponse<T> success() {
+        return new BaseResponse<>(true, "SUCCESS", "OK", null, null);
     }
 
     public static <T> BaseResponse<T> success(T data) {
