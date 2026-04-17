@@ -14,6 +14,8 @@ public interface ParcelRepository extends JpaRepository<ParcelDO, String>, JpaSp
 
     boolean existsByStationCodeAndPickupCode(String stationCode, String pickupCode);
 
+    List<ParcelDO> findByStationCodeAndPickupCode(String stationCode, String pickupCode);
+
     // todo 确实是find哪一个
     ParcelDO findFirstByStationCodeAndWaybillCode(String stationCode, String waybillCode);
 }

@@ -3,18 +3,20 @@ package com.lily.parcelhubcore.shared.handler;
 import static com.lily.parcelhubcore.shared.exception.ErrorCode.AUTHENTICATION_FAILED;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lily.parcelhubcore.shared.response.BaseResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -25,15 +27,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         // 设置 HTTP 状态码为 401（未认证）
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        // 构建统一 JSON 错误响应
-        Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("code", 401);
-        errorBody.put("message", AUTHENTICATION_FAILED.getMessage());
-        errorBody.put("timestamp", System.currentTimeMillis());
+        // 失败响应
+        BaseResponse<Void> baseResponse = BaseResponse.fail(AUTHENTICATION_FAILED.getCode(), authException.getMessage());
 
         // 写入响应体
-        objectMapper.writeValue(response.getWriter(), errorBody);
+        response.getWriter().write(objectMapper.writeValueAsString(baseResponse));
+
     }
 }

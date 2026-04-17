@@ -27,7 +27,7 @@ public class ParcelBaseService {
         // 查询是否已在任何站点入库
         var exist = waybillRegistryRepository.existsByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode());
         if (exist) {
-            throw new BusinessException(ErrorCode.PARCEL_EXIST);
+            throw new BusinessException(ErrorCode.PARCEL_ALREADY_EXIST);
         }
     }
 

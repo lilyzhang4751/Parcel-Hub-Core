@@ -63,7 +63,7 @@ public class ParcelOpServiceImpl implements ParcelOpService {
         var dto = new PrepareInDTO();
         BeanUtils.copyProperties(bo, dto);
 
-        var stationCode = bo.getStationCode();
+        var stationCode = CurrentUserUtil.getStationCode();
         var waybillCode = bo.getWaybillCode();
 
         // add lock
@@ -99,7 +99,7 @@ public class ParcelOpServiceImpl implements ParcelOpService {
 
     @Override
     public void inbound(ParcelInBoundCommand command) {
-        var stationCode = command.getStationCode();
+        var stationCode = CurrentUserUtil.getStationCode();
         var waybillCode = command.getWaybillCode();
         // add lock
         var lockKey = KeyConstants.getWaybillCodeLock(waybillCode);
