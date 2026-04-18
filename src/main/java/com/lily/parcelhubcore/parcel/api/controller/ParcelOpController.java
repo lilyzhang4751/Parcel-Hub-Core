@@ -14,7 +14,6 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,12 +27,7 @@ public class ParcelOpController {
     @Resource
     private ParcelOpService parcelOpService;
 
-    //todo delete
-    @GetMapping("/hello")
-    public String prepareIn() {
-        return "hello,lily";
-    }
-
+    // todo 想办法融入多线程～
     @PostMapping("/prepare/in")
     public BaseResponse<PrepareInResponse> prepareIn(@RequestBody @Valid PrepareInRequest request) {
         var command = new PrepareInCommand();

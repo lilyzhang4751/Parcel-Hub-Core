@@ -59,7 +59,6 @@ public class ParcelOpServiceImpl implements ParcelOpService {
 
     @Override
     public PrepareInDTO prepareIn(PrepareInCommand bo) {
-        // todo 参数格式校验
         var dto = new PrepareInDTO();
         BeanUtils.copyProperties(bo, dto);
 

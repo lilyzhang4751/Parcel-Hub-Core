@@ -1,5 +1,9 @@
 package com.lily.parcelhubcore.parcel.api.request;
 
+import static com.lily.parcelhubcore.parcel.shared.common.Constants.MOBILE_REGEXP;
+import static com.lily.parcelhubcore.parcel.shared.common.Constants.PICKUP_CODE_REGEXP;
+import static com.lily.parcelhubcore.parcel.shared.common.Constants.SHELF_CODE_REGEXP;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -19,17 +23,17 @@ public class InboundRequest implements Serializable {
     private String waybillCode;
 
     @NotBlank(message = "货架号不能为空")
-    @Pattern(regexp = "^\\d{1,2}-\\d{2}$", message = "货架号格式错误")
+    @Pattern(regexp = SHELF_CODE_REGEXP, message = "货架号格式错误")
     private String shelfCode;
 
     @NotBlank(message = "取件码不能为空")
-    @Pattern(regexp = "^\\d{1,2}-\\d{1,2}-\\d{1,3}$", message = "取件码格式错误")
+    @Pattern(regexp = PICKUP_CODE_REGEXP, message = "取件码格式错误")
     private String pickupCode;
 
     @Size(max = 20, message = "姓名长度不能超过20")
     private String recipientName;
 
     @NotBlank(message = "手机号不能为空")
-    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号非法")
+    @Pattern(regexp = MOBILE_REGEXP, message = "手机号非法")
     private String recipientMobile;
 }

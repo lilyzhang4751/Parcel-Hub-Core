@@ -52,7 +52,8 @@ public class SecurityConfig {
 
                 // 3. 权限配置
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/hello").permitAll() // 允许所有人访问
+                        // todo 放行静态资源,open api
+                        .requestMatchers("/swagger-ui/index.html", "/*.html", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
                         /*
                         Spring Boot 默认保护 /error，而 Spring Security 默认也会对 ERROR dispatcher 做授权检查
                         对ERROR和FORWARD放行，不再鉴权，防止出现异常时，再次进入认证流程
