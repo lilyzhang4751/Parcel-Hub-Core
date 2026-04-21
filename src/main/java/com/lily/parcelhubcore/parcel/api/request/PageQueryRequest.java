@@ -1,8 +1,8 @@
 package com.lily.parcelhubcore.parcel.api.request;
 
-import static com.lily.parcelhubcore.parcel.shared.common.Constants.MOBILE_REGEXP;
-import static com.lily.parcelhubcore.parcel.shared.common.Constants.PICKUP_CODE_REGEXP;
-import static com.lily.parcelhubcore.parcel.shared.common.Constants.SHELF_CODE_REGEXP;
+import static com.lily.parcelhubcore.parcel.common.constants.Constants.MOBILE_REGEXP;
+import static com.lily.parcelhubcore.parcel.common.constants.Constants.PICKUP_CODE_REGEXP;
+import static com.lily.parcelhubcore.parcel.common.constants.Constants.SHELF_CODE_REGEXP;
 
 import com.lily.parcelhubcore.shared.enums.NotifyStatusEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillStatusEnum;

@@ -5,7 +5,6 @@ import static com.lily.parcelhubcore.shared.exception.ErrorCode.AUTHENTICATION_F
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lily.parcelhubcore.shared.response.BaseResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Component

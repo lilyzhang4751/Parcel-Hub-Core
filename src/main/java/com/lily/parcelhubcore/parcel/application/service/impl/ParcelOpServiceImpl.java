@@ -1,9 +1,9 @@
 package com.lily.parcelhubcore.parcel.application.service.impl;
 
-import static com.lily.parcelhubcore.parcel.shared.common.Constants.LOCK_TIME;
-import static com.lily.parcelhubcore.parcel.shared.common.Constants.PICKUP_CACHE_HOURS;
-import static com.lily.parcelhubcore.parcel.shared.enums.ErrorCode.PARCEL_NOT_EXIST;
-import static com.lily.parcelhubcore.parcel.shared.enums.ErrorCode.PARCEL_NOT_INBOUND;
+import static com.lily.parcelhubcore.parcel.common.constants.Constants.LOCK_TIME;
+import static com.lily.parcelhubcore.parcel.common.constants.Constants.PICKUP_CACHE_HOURS;
+import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.PARCEL_NOT_EXIST;
+import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.PARCEL_NOT_INBOUND;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -13,14 +13,14 @@ import com.lily.parcelhubcore.parcel.application.command.PrepareInCommand;
 import com.lily.parcelhubcore.parcel.application.dto.PrepareInDTO;
 import com.lily.parcelhubcore.parcel.application.service.ParcelOpService;
 import com.lily.parcelhubcore.parcel.domain.service.PackageBuilder;
-import com.lily.parcelhubcore.parcel.domain.service.ParcelBaseService;
+import com.lily.parcelhubcore.parcel.domain.service.ParcelDomainService;
 import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;
-import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelDO;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
-import com.lily.parcelhubcore.parcel.shared.common.KeyConstants;
-import com.lily.parcelhubcore.parcel.shared.enums.ErrorCode;
-import com.lily.parcelhubcore.parcel.shared.util.CommonUtil;
+import com.lily.parcelhubcore.parcel.common.constants.KeyConstants;
+import com.lily.parcelhubcore.parcel.common.enums.ErrorCode;
+import com.lily.parcelhubcore.parcel.common.util.CommonUtil;
 import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
@@ -40,7 +40,7 @@ public class ParcelOpServiceImpl implements ParcelOpService {
     private Lock lock;
 
     @Resource
-    private ParcelBaseService parcelBaseService;
+    private ParcelDomainService parcelDomainService;
 
     @Resource
     private CacheService cacheService;
@@ -73,7 +73,7 @@ public class ParcelOpServiceImpl implements ParcelOpService {
             }
 
             // 查询是否已在任何站点入库
-            parcelBaseService.waybillInBoundVerify(waybillCode);
+            parcelDomainService.waybillInBoundVerify(waybillCode);
 
             // 查看是否有缓存的取件码（和货架号匹配），有的话直接返回（幂等）；
             var cacheKey = KeyConstants.getWaybillPickupCacheKey(stationCode, waybillCode);
@@ -107,13 +107,13 @@ public class ParcelOpServiceImpl implements ParcelOpService {
                 throw new BusinessException(ErrorCode.CURRENT_EXCEPTION);
             }
             // 查询是否已在任何站点入库
-            parcelBaseService.waybillInBoundVerify(waybillCode);
+            parcelDomainService.waybillInBoundVerify(waybillCode);
             // 校验取件码是否有重复；
             pickupCodeService.pickupCodeExistVerify(stationCode, command.getPickupCode());
             // 构建数据库操作对象和消息体
             var packDTO = packageBuilder.buildInParcelPackDTO(command);
             // 事务内更新数据库，发送消息
-            parcelBaseService.updateDBAndSendMsg(packDTO);
+            parcelDomainService.updateDBAndSendMsg(packDTO);
             // 删除该运单号的取件码缓存
             cacheService.delete(KeyConstants.getWaybillPickupCacheKey(stationCode, waybillCode));
         } finally {
@@ -141,7 +141,7 @@ public class ParcelOpServiceImpl implements ParcelOpService {
             // 构建数据库操作对象和消息体
             var packDTO = packageBuilder.buildParcelPackByType(waybillRegistry, parcel, operateTypeEnum);
             // 事务内更新数据库，发送消息
-            parcelBaseService.updateDBAndSendMsg(packDTO);
+            parcelDomainService.updateDBAndSendMsg(packDTO);
         } finally {
             lock.unlock(lockKey);
         }
@@ -164,13 +164,13 @@ public class ParcelOpServiceImpl implements ParcelOpService {
             // 构建数据库操作对象和消息体
             var packDTO = packageBuilder.buildTransferParcelPackDTO(parcel, shelfCode, newPickupCode);
             // 事务内更新数据库，发送消息
-            parcelBaseService.updateDBAndSendMsg(packDTO);
+            parcelDomainService.updateDBAndSendMsg(packDTO);
         } finally {
             lock.unlock(lockKey);
         }
     }
 
-    private ParcelDO getParcelDO(String stationCode, String waybillCode) {
+    private Parcel getParcelDO(String stationCode, String waybillCode) {
 // 查询包裹是否存在
         var parcel = parcelRepository.findFirstByStationCodeAndWaybillCode(stationCode, waybillCode);
         if (parcel == null) {

@@ -1,4 +1,4 @@
-package com.lily.parcelhubcore.parcel.shared.enums;
+package com.lily.parcelhubcore.parcel.common.enums;
 
 import com.lily.parcelhubcore.shared.exception.CommonErrorCode;
 import lombok.Getter;

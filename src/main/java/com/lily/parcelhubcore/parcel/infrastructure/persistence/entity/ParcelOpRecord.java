@@ -8,16 +8,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "parcel", comment = "包裹表")
+@Table(name = "parcel_op_record")
 @DynamicInsert
-@DynamicUpdate
-public class ParcelDO {
+public class ParcelOpRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,28 +33,20 @@ public class ParcelDO {
     @Column(name = "waybill_code")
     private String waybillCode;
 
-    @Column(name = "pickup_code")
-    private String pickupCode;
+    @Column(name = "op_time")
+    private Instant opTime;
 
-    @Column(name = "shelf_code")
-    private String shelfCode;
+    @Column(name = "op_type")
+    private Integer opType;
 
-    @Column(name = "recipient_name")
-    private String recipientName;
+    @Column(name = "operator_code")
+    private String operatorCode;
 
-    @Column(name = "recipient_mobile")
-    private String recipientMobile;
+    @Column(name = "operator_name")
+    private String operatorName;
 
-    private Integer status;
-
-    @Column(name = "notify_status")
-    private Integer notifyStatus;
-
-    @Column(name = "latest_inbound_time")
-    private Instant latestInboundTime;
-
-    @Column(name = "latest_outbound_time")
-    private Instant latestOutboundTime;
+    @Column(name = "unique_id")
+    private String uniqueId;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;

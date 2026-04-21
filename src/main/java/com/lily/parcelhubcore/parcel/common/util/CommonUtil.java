@@ -1,4 +1,4 @@
-package com.lily.parcelhubcore.parcel.shared.util;
+package com.lily.parcelhubcore.parcel.common.util;
 
 import org.springframework.util.StringUtils;
 

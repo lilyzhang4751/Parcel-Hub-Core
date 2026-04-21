@@ -1,4 +1,4 @@
-package com.lily.parcelhubcore.parcel.shared.common;
+package com.lily.parcelhubcore.parcel.common.constants;
 
 public class KeyConstants {
 

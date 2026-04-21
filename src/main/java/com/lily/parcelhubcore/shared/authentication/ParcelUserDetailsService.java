@@ -1,6 +1,6 @@
 package com.lily.parcelhubcore.shared.authentication;
 
-import static com.lily.parcelhubcore.parcel.shared.enums.ErrorCode.USER_NOT_EXIST;
+import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.USER_NOT_EXIST;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -9,37 +9,28 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Data
-@NoArgsConstructor
 @Entity
-@Table(name = "parcel_op_record")
+@Table(name = "waybill_registry", comment = "运单注册表")
 @DynamicInsert
-public class ParcelOpRecordDO {
+@DynamicUpdate
+public class WaybillRegistry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "station_code")
-    private String stationCode;
-
     @Column(name = "waybill_code")
     private String waybillCode;
 
-    @Column(name = "op_time")
-    private Instant opTime;
+    @Column(name = "station_code")
+    private String stationCode;
 
-    @Column(name = "op_type")
-    private Integer opType;
-
-    @Column(name = "operator_code")
-    private String operatorCode;
-
-    @Column(name = "operator_name")
-    private String operatorName;
+    @Column(name = "status")
+    private Integer status;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;

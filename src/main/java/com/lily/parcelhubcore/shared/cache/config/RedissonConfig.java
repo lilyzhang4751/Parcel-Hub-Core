@@ -1,7 +1,8 @@
-package com.lily.parcelhubcore.shared.lock.config;
+package com.lily.parcelhubcore.shared.cache.config;
 
 import com.lily.parcelhubcore.shared.lock.Lock;
 import com.lily.parcelhubcore.shared.lock.RedissonDistributedLock;
+import com.lily.parcelhubcore.shared.lock.config.DistributedLockProperties;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;

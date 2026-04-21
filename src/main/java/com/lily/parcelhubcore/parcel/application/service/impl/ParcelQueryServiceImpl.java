@@ -1,13 +1,13 @@
 package com.lily.parcelhubcore.parcel.application.service.impl;
 
-import static com.lily.parcelhubcore.parcel.shared.enums.ErrorCode.PARCEL_NOT_EXIST;
+import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.PARCEL_NOT_EXIST;
 
 import java.util.ArrayList;
 
 import com.lily.parcelhubcore.parcel.api.response.ParcelInfoDTO;
 import com.lily.parcelhubcore.parcel.application.query.ParcelPageQuery;
 import com.lily.parcelhubcore.parcel.application.service.ParcelQueryService;
-import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelDO;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.shared.response.PageResponse;
@@ -38,7 +38,7 @@ public class ParcelQueryServiceImpl implements ParcelQueryService {
 
     @Override
     public PageResponse<ParcelInfoDTO> pageQuery(ParcelPageQuery query) {
-        Specification<ParcelDO> spec = (root, cq, cb) -> {
+        Specification<Parcel> spec = (root, cq, cb) -> {
             var predicates = new ArrayList<>();
             predicates.add(cb.equal(root.get("stationCode"), query.getStationCode()));
 
@@ -76,7 +76,7 @@ public class ParcelQueryServiceImpl implements ParcelQueryService {
                 .pageSize(query.getPageSize()).build();
     }
 
-    private ParcelInfoDTO toDTO(ParcelDO parcel) {
+    private ParcelInfoDTO toDTO(Parcel parcel) {
         var dto = new ParcelInfoDTO();
         BeanUtils.copyProperties(parcel, dto);
         dto.setLatestInboundTime(TimeConvertUtils.toEpochMilli(parcel.getLatestInboundTime()));

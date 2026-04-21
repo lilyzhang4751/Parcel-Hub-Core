@@ -28,6 +28,7 @@ public class ParcelQueryController {
     @Resource
     private ParcelQueryService parcelQueryService;
 
+    // todo 查询增加包裹操作记录
     @GetMapping("/{waybillCode}")
     public BaseResponse<ParcelInfoDTO> querySingleParcel(@PathVariable @NotBlank(message = "运单号不能为空") String waybillCode) {
         var parcel = parcelQueryService.querySingleParcel(CurrentUserUtil.getStationCode(), waybillCode);

@@ -1,17 +1,17 @@
 package com.lily.parcelhubcore.parcel.domain.service.impl;
 
-import static com.lily.parcelhubcore.parcel.shared.common.Constants.LOCK_TIME;
+import static com.lily.parcelhubcore.parcel.common.constants.Constants.LOCK_TIME;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.lily.parcelhubcore.parcel.shared.enums.ErrorCode;
+import com.lily.parcelhubcore.parcel.common.enums.ErrorCode;
 import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;
-import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelDO;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
-import com.lily.parcelhubcore.parcel.shared.common.KeyConstants;
+import com.lily.parcelhubcore.parcel.common.constants.KeyConstants;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.shared.lock.Lock;
 import jakarta.annotation.Resource;
@@ -73,7 +73,7 @@ public class PickupCodeServiceImpl implements PickupCodeService {
 
             // 1 查询包裹表，获取还在库使用的取件码
             var currentList = parcelRepository.findByStationCodeAndShelfCode(stationCode, shelfCode);
-            var pickupCodeList = currentList.stream().map(ParcelDO::getPickupCode).toList();
+            var pickupCodeList = currentList.stream().map(Parcel::getPickupCode).toList();
             // 2 生成1-999共1k个号码池,剔除在库取件码
             Map<String, Double> scoreMap = new HashMap<>(1000);
             for (int i = 1; i < 1000; i++) {

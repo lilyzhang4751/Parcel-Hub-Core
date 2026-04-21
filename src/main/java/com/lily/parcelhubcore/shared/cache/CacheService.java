@@ -48,6 +48,14 @@ public class CacheService {
     }
 
     /**
+     * 不存在时设置
+     */
+    public <T> boolean setIfAbsent(String key, long expireSeconds) {
+        RBucket<String> bucket = redissonClient.getBucket(key);
+        return bucket.setIfAbsent("1", Duration.ofSeconds(expireSeconds));
+    }
+
+    /**
      * 取对象（JSON 转对象）
      */
     public <T> T get(String key, Class<T> clazz) {
