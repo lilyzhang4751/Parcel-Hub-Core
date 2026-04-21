@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum ErrorCode implements CommonErrorCode {
 
     USER_NOT_EXIST("USER_NOT_EXIST", "用户名或密码错误"),
+    STATION_NOT_EXIST("STATION_NOT_EXIST", "站点不存在"),
 
     CURRENT_EXCEPTION("LOCK_FAILED", "当前包裹正在操作，请稍后重试"),
     PARCEL_ALREADY_EXIST("PARCEL_ALREADY_EXIST", "当前包裹已入库，无法操作"),

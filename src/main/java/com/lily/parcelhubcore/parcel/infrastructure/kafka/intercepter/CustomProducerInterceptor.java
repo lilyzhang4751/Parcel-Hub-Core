@@ -1,9 +1,9 @@
 package com.lily.parcelhubcore.parcel.infrastructure.kafka.intercepter;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.github.f4b6a3.ulid.UlidCreator;
 import org.apache.kafka.clients.producer.ProducerInterceptor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -30,7 +30,7 @@ public class CustomProducerInterceptor implements ProducerInterceptor<String, St
                 record.timestamp(),
                 record.key(),
                 record.value(),
-                record.headers().add("uniqueId", UlidCreator.getMonotonicUlid().toString().getBytes())
+                record.headers().add("uniqueId", UUID.randomUUID().toString().getBytes())
         );
     }
 

@@ -33,11 +33,14 @@ public class ParcelNotifyRecord {
     @Column(name = "waybill_code")
     private String waybillCode;
 
+    @Column(name = "mobile")
+    private String mobile;
+
     @Column(name = "notify_time")
     private Instant notifyTime;
 
     @Column(name = "channel")
-    private Integer channel;
+    private String channel;
 
     @Column(name = "status")
     private Integer status;

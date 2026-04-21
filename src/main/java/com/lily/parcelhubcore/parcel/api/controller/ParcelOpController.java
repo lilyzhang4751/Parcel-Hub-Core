@@ -27,7 +27,6 @@ public class ParcelOpController {
     @Resource
     private ParcelOpService parcelOpService;
 
-    // todo 想办法融入多线程～
     @PostMapping("/prepare/in")
     public BaseResponse<PrepareInResponse> prepareIn(@RequestBody @Valid PrepareInRequest request) {
         var command = new PrepareInCommand();
@@ -60,7 +59,6 @@ public class ParcelOpController {
         return BaseResponse.success(OpResultResponse.builder().result(true).build());
     }
 
-    // todo ；移库的操作记录没有货架号取件码，这样看不到修改记录
     @PostMapping("/transfer")
     public BaseResponse<OpResultResponse> transfer(String waybillCode, String shelfCode) {
         parcelOpService.transfer(waybillCode, shelfCode);

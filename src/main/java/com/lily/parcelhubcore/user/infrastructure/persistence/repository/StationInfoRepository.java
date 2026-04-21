@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StationInfoRepository extends JpaRepository<StationInfoDO, Long>, JpaSpecificationExecutor<StationInfoDO> {
 
-    boolean existsByCode(String code);
+    StationInfoDO findByCode(String code);
 
     boolean existsByCodeAndStatus(String code, Integer status);
     // 可根据需要添加更多查询方法

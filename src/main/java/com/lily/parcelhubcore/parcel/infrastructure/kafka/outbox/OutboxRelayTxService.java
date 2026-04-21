@@ -7,13 +7,14 @@ import java.util.List;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.MessageOutbox;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.MessageOutboxRepository;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+@Slf4j
 @Service
 public class OutboxRelayTxService {
 
@@ -32,16 +33,20 @@ public class OutboxRelayTxService {
     @Transactional
     public List<MessageOutbox> claimBatch() {
         var rows = outboxRepository.findReadyForPublish(
-                List.of(MessageOutbox.Status.NEW, MessageOutbox.Status.FAILED),
+                List.of(
+                        MessageOutbox.Status.NEW.name(),
+                        MessageOutbox.Status.FAILED.name()
+                ),
                 Instant.now(),
                 maxRetry,
-                PageRequest.of(0, batchSize)
+                batchSize
         );
 
-        if(CollectionUtils.isEmpty(rows)){
+        if (CollectionUtils.isEmpty(rows)) {
             return new ArrayList<>();
         }
 
+        // 更新成处理中，避免别的实例也查出来处理
         for (MessageOutbox row : rows) {
             var currentRetry = row.getRetryCount() == null ? 0 : row.getRetryCount();
             row.setStatus(MessageOutbox.Status.PROCESSING);

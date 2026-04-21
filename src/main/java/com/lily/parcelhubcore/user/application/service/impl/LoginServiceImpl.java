@@ -2,7 +2,6 @@ package com.lily.parcelhubcore.user.application.service.impl;
 
 import static com.lily.parcelhubcore.shared.exception.ErrorCode.AUTHENTICATION_FAILED;
 
-import com.github.f4b6a3.ulid.UlidCreator;
 import com.lily.parcelhubcore.shared.authentication.dto.LoginUser;
 import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.shared.constants.KeyConstants;
@@ -12,6 +11,7 @@ import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.shared.util.JwtUtils;
 import com.lily.parcelhubcore.user.application.command.UserRegisterCommand;
 import com.lily.parcelhubcore.user.application.service.LoginService;
+import com.lily.parcelhubcore.user.application.util.CodeGenerator;
 import com.lily.parcelhubcore.user.infrastructure.persistence.entity.UserInfoDO;
 import com.lily.parcelhubcore.user.infrastructure.persistence.repository.StationInfoRepository;
 import com.lily.parcelhubcore.user.infrastructure.persistence.repository.UserInfoRepository;
@@ -22,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -39,6 +40,7 @@ public class LoginServiceImpl implements LoginService {
     private StationInfoRepository stationInfoRepository;
 
     @Override
+    @Transactional
     public void register(UserRegisterCommand command) {
         var stationCode = command.getStationCode();
         var stationExist = stationInfoRepository.existsByCodeAndStatus(stationCode, StationStatusEnum.OPERATION.getCode());
@@ -47,12 +49,13 @@ public class LoginServiceImpl implements LoginService {
         }
         var user = new UserInfoDO();
         user.setStationCode(stationCode);
-        user.setCode(UlidCreator.getMonotonicUlid().toString());
         user.setUsername(command.getUsername());
         user.setRole(command.getRole());
         user.setStatus(UserStatusEnum.WORKING.getCode());
         var encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(command.getPassword()));
+        var id = userInfoRepository.save(user).getId();
+        user.setCode(CodeGenerator.buildUserCode(id));
         userInfoRepository.save(user);
     }
 

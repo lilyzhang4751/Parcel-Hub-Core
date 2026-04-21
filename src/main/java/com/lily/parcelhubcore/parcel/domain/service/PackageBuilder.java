@@ -3,8 +3,8 @@ package com.lily.parcelhubcore.parcel.domain.service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import com.github.f4b6a3.ulid.UlidCreator;
 import com.lily.parcelhubcore.parcel.application.command.ParcelInBoundCommand;
 import com.lily.parcelhubcore.parcel.domain.dto.ParcelNotifyEvent;
 import com.lily.parcelhubcore.parcel.domain.dto.ParcelOpSyncEvent;
@@ -13,7 +13,6 @@ import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.ParcelOpRecord;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.WaybillRegistry;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
-import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
 import com.lily.parcelhubcore.shared.enums.NotifyChannelEnum;
 import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
@@ -27,8 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PackageBuilder {
 
-    @Resource
-    private WaybillRegistryRepository waybillRegistryRepository;
+    private static final String TRANSFER_DESC = "移库：货架号：%s->%s, 取件码：%s->%s";
 
     @Resource
     private ParcelRepository parcelRepository;
@@ -46,6 +44,7 @@ public class PackageBuilder {
         // 包裹操作记录
         var parcelOpRecordDO = buildOpRecord(stationCode, waybillCode, nowInstant);
         parcelOpRecordDO.setOpType(OperateTypeEnum.IN.getCode());
+        parcelOpRecordDO.setDetail(OperateTypeEnum.IN.getDesc());
         var opSyncEvent = buildParcelOpSyncEvent(parcelOpRecordDO);
 
         // 包裹表
@@ -55,7 +54,7 @@ public class PackageBuilder {
         parcelDO.setLatestInboundTime(nowInstant);
 
         // 包裹通知记录
-        var notifyEvent = buildNotifyEvent(stationCode, waybillCode, nowInstant);
+        var notifyEvent = buildNotifyEvent(stationCode, waybillCode, nowInstant, command.getPickupCode());
         // 短信，app都推送
         notifyEvent.setChannelList(new ArrayList<>(List.of(NotifyChannelEnum.SMS.getDesc(), NotifyChannelEnum.APP.getDesc())));
 
@@ -80,9 +79,10 @@ public class PackageBuilder {
         var nowInstant = TimeConvertUtils.toInstant(System.currentTimeMillis());
         var parcelOpRecordDO = buildOpRecord(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant);
         parcelOpRecordDO.setOpType(operateTypeEnum.getCode());
+        parcelOpRecordDO.setDetail(operateTypeEnum.getDesc());
         var opSyncEvent = buildParcelOpSyncEvent(parcelOpRecordDO);
         // 包裹通知记录
-        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant);
+        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant, parcel.getPickupCode());
         // app推送
         notifyEvent.setChannelList(new ArrayList<>(List.of(NotifyChannelEnum.APP.getDesc())));
 
@@ -98,6 +98,9 @@ public class PackageBuilder {
     }
 
     public ParcelPackDTO buildTransferParcelPackDTO(Parcel parcel, String shelfCode, String pickupCode) {
+        var oldShelfCode = parcel.getShelfCode();
+        var oldPickupCode = parcel.getPickupCode();
+
         parcel.setShelfCode(shelfCode);
         parcel.setPickupCode(pickupCode);
         var nowInstant = TimeConvertUtils.toInstant(System.currentTimeMillis());
@@ -105,9 +108,11 @@ public class PackageBuilder {
         // 包裹操作记录
         var parcelOpRecordDO = buildOpRecord(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant);
         parcelOpRecordDO.setOpType(OperateTypeEnum.TRANSFER.getCode());
+        var desc = String.format(TRANSFER_DESC, oldShelfCode, shelfCode, oldPickupCode, parcel);
+        parcelOpRecordDO.setDetail(desc);
         var opSyncEvent = buildParcelOpSyncEvent(parcelOpRecordDO);
         // 包裹通知记录
-        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant);
+        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant, pickupCode);
         // 短信，app都推送
         notifyEvent.setChannelList(new ArrayList<>(List.of(NotifyChannelEnum.SMS.getDesc(), NotifyChannelEnum.APP.getDesc())));
 
@@ -121,23 +126,26 @@ public class PackageBuilder {
         parcelOpRecordDO.setOperatorCode(CurrentUserUtil.getUserCode());
         parcelOpRecordDO.setOperatorName(CurrentUserUtil.getUsername());
         parcelOpRecordDO.setOpTime(nowInstant);
-        parcelOpRecordDO.setUniqueId(UlidCreator.getMonotonicUlid().toString());
+        parcelOpRecordDO.setUniqueId(UUID.randomUUID().toString());
         return parcelOpRecordDO;
     }
 
-    private ParcelNotifyEvent buildNotifyEvent(String stationCode, String waybillCode, Instant nowInstant) {
-        var notifyRecord = new ParcelNotifyEvent();
-        notifyRecord.setStationCode(stationCode);
-        notifyRecord.setWaybillCode(waybillCode);
-        notifyRecord.setOperatorCode(CurrentUserUtil.getUserCode());
-        notifyRecord.setOperatorName(CurrentUserUtil.getUsername());
-        notifyRecord.setNotifyTime(nowInstant);
-        return notifyRecord;
+    private ParcelNotifyEvent buildNotifyEvent(String stationCode, String waybillCode, Instant nowInstant, String pickupCode) {
+        var notifyEvent = new ParcelNotifyEvent();
+        notifyEvent.setStationCode(stationCode);
+        notifyEvent.setWaybillCode(waybillCode);
+        notifyEvent.setPickupCode(pickupCode);
+        notifyEvent.setOperatorCode(CurrentUserUtil.getUserCode());
+        notifyEvent.setOperatorName(CurrentUserUtil.getUsername());
+        notifyEvent.setNotifyTime(nowInstant);
+        notifyEvent.setEventId(UUID.randomUUID().toString());
+        return notifyEvent;
     }
 
     private ParcelOpSyncEvent buildParcelOpSyncEvent(ParcelOpRecord opRecord) {
         var opSyncEvent = new ParcelOpSyncEvent();
         BeanUtils.copyProperties(opRecord, opSyncEvent);
+        opSyncEvent.setEventId(opRecord.getUniqueId());
         return opSyncEvent;
     }
 }

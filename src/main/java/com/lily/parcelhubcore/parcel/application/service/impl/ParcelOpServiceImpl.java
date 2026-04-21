@@ -3,7 +3,6 @@ package com.lily.parcelhubcore.parcel.application.service.impl;
 import static com.lily.parcelhubcore.parcel.common.constants.Constants.LOCK_TIME;
 import static com.lily.parcelhubcore.parcel.common.constants.Constants.PICKUP_CACHE_HOURS;
 import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.PARCEL_NOT_EXIST;
-import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.PARCEL_NOT_INBOUND;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -12,19 +11,17 @@ import com.lily.parcelhubcore.parcel.application.command.ParcelInBoundCommand;
 import com.lily.parcelhubcore.parcel.application.command.PrepareInCommand;
 import com.lily.parcelhubcore.parcel.application.dto.PrepareInDTO;
 import com.lily.parcelhubcore.parcel.application.service.ParcelOpService;
-import com.lily.parcelhubcore.parcel.domain.service.PackageBuilder;
-import com.lily.parcelhubcore.parcel.domain.service.ParcelDomainService;
-import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;
-import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
-import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
-import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
 import com.lily.parcelhubcore.parcel.common.constants.KeyConstants;
 import com.lily.parcelhubcore.parcel.common.enums.ErrorCode;
 import com.lily.parcelhubcore.parcel.common.util.CommonUtil;
+import com.lily.parcelhubcore.parcel.domain.service.PackageBuilder;
+import com.lily.parcelhubcore.parcel.domain.service.ParcelDomainService;
+import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
 import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
-import com.lily.parcelhubcore.shared.enums.WaybillStatusEnum;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.shared.lock.Lock;
 import com.lily.parcelhubcore.shared.util.CurrentUserUtil;
@@ -136,8 +133,8 @@ public class ParcelOpServiceImpl implements ParcelOpService {
                 throw new BusinessException(PARCEL_NOT_EXIST);
             }
 
-            // 查询包裹是否存在
-            var parcel = getParcelDO(stationCode, waybillCode);
+            // 查询在库包裹
+            var parcel = parcelDomainService.getInboundParcelDO(stationCode, waybillCode);
             // 构建数据库操作对象和消息体
             var packDTO = packageBuilder.buildParcelPackByType(waybillRegistry, parcel, operateTypeEnum);
             // 事务内更新数据库，发送消息
@@ -156,8 +153,8 @@ public class ParcelOpServiceImpl implements ParcelOpService {
                 throw new BusinessException(ErrorCode.CURRENT_EXCEPTION);
             }
             var stationCode = CurrentUserUtil.getStationCode();
-            // 查询包裹是否存在
-            var parcel = getParcelDO(stationCode, waybillCode);
+            // 查询在库包裹
+            var parcel = parcelDomainService.getInboundParcelDO(stationCode, waybillCode);
             // 移库重新生成取件码
             //  生成取件码
             var newPickupCode = pickupCodeService.genarate(stationCode, shelfCode);
@@ -170,16 +167,4 @@ public class ParcelOpServiceImpl implements ParcelOpService {
         }
     }
 
-    private Parcel getParcelDO(String stationCode, String waybillCode) {
-// 查询包裹是否存在
-        var parcel = parcelRepository.findFirstByStationCodeAndWaybillCode(stationCode, waybillCode);
-        if (parcel == null) {
-            throw new BusinessException(PARCEL_NOT_EXIST);
-        }
-        // 包裹是否还在库
-        if (!Objects.equals(parcel.getStatus(), WaybillStatusEnum.INBOUND.getCode())) {
-            throw new BusinessException(PARCEL_NOT_INBOUND);
-        }
-        return parcel;
-    }
 }

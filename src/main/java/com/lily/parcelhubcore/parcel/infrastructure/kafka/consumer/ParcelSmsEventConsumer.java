@@ -1,16 +1,17 @@
 package com.lily.parcelhubcore.parcel.infrastructure.kafka.consumer;
 
+import com.alibaba.fastjson2.JSON;
 import com.lily.parcelhubcore.parcel.domain.dto.ParcelNotifyEvent;
 import com.lily.parcelhubcore.parcel.infrastructure.kafka.config.KafkaTopicConfig;
 import com.lily.parcelhubcore.shared.enums.NotifyChannelEnum;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
+@Slf4j
 @Component
 public class ParcelSmsEventConsumer extends NotifyEventConsumer {
 
@@ -29,11 +30,8 @@ public class ParcelSmsEventConsumer extends NotifyEventConsumer {
             return;
         }
         var event = objectMapper.readValue(payload, ParcelNotifyEvent.class);
-        var channelList = event.getChannelList();
-        if (CollectionUtils.isEmpty(channelList)) {
-            return;
-        }
-        if (!channelList.contains(NotifyChannelEnum.SMS.getDesc())) {
+        log.info("[ParcelSmsEventConsumer][onMessage][消息开始处理][event={}]", JSON.toJSON(event));
+        if (notNeedHandle(event, NotifyChannelEnum.SMS)) {
             return;
         }
         saveParcelNotifyEvent(event, NotifyChannelEnum.SMS);
@@ -41,5 +39,6 @@ public class ParcelSmsEventConsumer extends NotifyEventConsumer {
 
         // 处理成功设置缓存
         setAlreadyConsumed(eventId);
+        log.info("[ParcelAppEventConsumer][onMessage][短信推送成功][event={}]", JSON.toJSON(event));
     }
 }

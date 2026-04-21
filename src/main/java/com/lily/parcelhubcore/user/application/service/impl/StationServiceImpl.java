@@ -9,7 +9,6 @@ import com.lily.parcelhubcore.user.infrastructure.persistence.repository.Station
 import jakarta.annotation.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -32,7 +31,7 @@ public class StationServiceImpl implements StationService {
         station.setBusinessStartTime(command.getBusinessStartTime());
         station.setBusinessEndTime(command.getBusinessEndTime());
         var id = stationInfoRepository.save(station).getId();
-        station.setCode(CodeGenerator.fromId(id));
+        station.setCode(CodeGenerator.buildStationCode(id));
         stationInfoRepository.save(station);
     }
 

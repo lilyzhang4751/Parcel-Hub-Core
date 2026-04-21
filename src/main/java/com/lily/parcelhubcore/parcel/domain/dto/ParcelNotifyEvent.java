@@ -25,6 +25,8 @@ public class ParcelNotifyEvent implements DomainEvent, Serializable {
 
     private String operatorName;
 
+    private String pickupCode;
+
     private List<String> channelList;
 
     private String eventId;

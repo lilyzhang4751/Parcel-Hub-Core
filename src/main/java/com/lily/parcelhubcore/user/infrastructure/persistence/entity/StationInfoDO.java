@@ -64,9 +64,6 @@ public class StationInfoDO {
     @Column(name = "business_end_time")
     private LocalTime businessEndTime;
 
-    @Column(name = "remarks")
-    private String remarks;
-
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;

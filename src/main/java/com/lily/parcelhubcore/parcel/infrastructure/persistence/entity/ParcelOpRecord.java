@@ -39,6 +39,9 @@ public class ParcelOpRecord {
     @Column(name = "op_type")
     private Integer opType;
 
+    @Column(name = "detail")
+    private String detail;
+
     @Column(name = "operator_code")
     private String operatorCode;
 
