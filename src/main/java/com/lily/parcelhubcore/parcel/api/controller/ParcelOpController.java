@@ -10,6 +10,7 @@ import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 import com.lily.parcelhubcore.shared.response.BaseResponse;
 import com.lily.parcelhubcore.shared.response.OpResultResponse;
 import com.lily.parcelhubcore.shared.util.CurrentUserUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @PreAuthorize("hasAnyAuthority('MANAGER','STAFF')")
 @RequestMapping("/parcel")
+@Tag(name = "包裹操作", description = "包裹主要操作相关接口")
 public class ParcelOpController {
 
     @Resource

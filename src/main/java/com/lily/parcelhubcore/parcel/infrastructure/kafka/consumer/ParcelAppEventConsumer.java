@@ -35,7 +35,7 @@ public class ParcelAppEventConsumer extends NotifyEventConsumer {
             return;
         }
         saveParcelNotifyEvent(event, NotifyChannelEnum.APP);
-        // todo 实际发送短信或app推送，需要三方接口支持，此处省略
+        // 实际发送短信或app推送，需要三方接口支持，此处省略
 
         // 处理成功设置缓存
         setAlreadyConsumed(eventId);

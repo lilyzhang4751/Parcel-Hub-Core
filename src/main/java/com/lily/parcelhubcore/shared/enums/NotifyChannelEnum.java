@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public enum NotifyChannelEnum implements IntCodeEnum {
     /**
-     * 通知类型：1-SMS 2-APP
+     * 通知渠道：SMS APP
      */
     SMS(1, "SMS"),
     APP(2, "APP");

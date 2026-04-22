@@ -62,12 +62,10 @@ public class PackageBuilder {
                 .parcelOpSyncEvent(opSyncEvent).parcelNotifyEvent(notifyEvent).waybillCode(waybillRegistryDO.getWaybillCode()).build();
 
         // 查看包裹是首次入库还是多次入库
-        var oldParcel = parcelRepository.findFirstByStationCodeAndWaybillCode(stationCode, waybillCode);
+        var oldParcel = parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode);
 
-        if (oldParcel != null) {
-            // 后续用save方法，有id时更新，无id时插入
-            parcelDO.setId(oldParcel.getId());
-        }
+        // 后续用save方法，有id时更新，无id时插入
+        oldParcel.ifPresent(old -> parcelDO.setId(old.getId()));
         pack.setParcel(parcelDO);
         return pack;
     }

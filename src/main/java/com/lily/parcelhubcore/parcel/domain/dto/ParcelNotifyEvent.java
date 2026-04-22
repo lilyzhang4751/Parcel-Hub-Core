@@ -18,7 +18,7 @@ public class ParcelNotifyEvent implements DomainEvent, Serializable {
     private String waybillCode;
 
     private Instant notifyTime;
-    // todo
+
     private String content;
 
     private String operatorCode;

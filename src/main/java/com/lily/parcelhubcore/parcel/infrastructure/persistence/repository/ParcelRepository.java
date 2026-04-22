@@ -1,6 +1,7 @@
 package com.lily.parcelhubcore.parcel.infrastructure.persistence.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,8 +15,5 @@ public interface ParcelRepository extends JpaRepository<Parcel, String>, JpaSpec
 
     boolean existsByStationCodeAndPickupCode(String stationCode, String pickupCode);
 
-    List<Parcel> findByStationCodeAndPickupCode(String stationCode, String pickupCode);
-
-    // todo 确实是find哪一个
-    Parcel findFirstByStationCodeAndWaybillCode(String stationCode, String waybillCode);
+    Optional<Parcel> findByStationCodeAndWaybillCode(String stationCode, String waybillCode);
 }

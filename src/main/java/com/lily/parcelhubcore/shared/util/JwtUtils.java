@@ -14,7 +14,6 @@ public class JwtUtils {
     // 过期时间（毫秒）
     private static final long EXPIRATION = 86400000; // 24小时
     // 密钥（至少256位，放配置文件）
-    //todo @Value("${jwt.secret}")
     private static final String SECRET = "Z1TIi6xB1peUANzMEslwn1E+VGI8TVOyXat8phJW6BQ=";
     //  HMAC-SHA256 算法，属于对称加密
     private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET.getBytes());

@@ -52,15 +52,15 @@ public class SecurityConfig {
 
                 // 3. 权限配置
                 .authorizeHttpRequests(auth -> auth
-                        // todo 放行静态资源,open api
-                        .requestMatchers("/swagger-ui/index.html", "/*.html", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        // 放行 open api
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         /*
                         Spring Boot 默认保护 /error，而 Spring Security 默认也会对 ERROR dispatcher 做授权检查
                         对ERROR和FORWARD放行，不再鉴权，防止出现异常时，再次进入认证流程
                          */
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers("/user/register", "/station/register", "/error").permitAll()
-                        .requestMatchers("/user/login").anonymous()  //  未登录状态才能访问
+                        .requestMatchers("/user/login").anonymous()
                         .anyRequest().authenticated()
                 )
 

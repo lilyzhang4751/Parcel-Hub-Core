@@ -52,6 +52,7 @@ public class LoginServiceImpl implements LoginService {
         user.setUsername(command.getUsername());
         user.setRole(command.getRole());
         user.setStatus(UserStatusEnum.WORKING.getCode());
+        // 密码用单向加密
         var encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(command.getPassword()));
         var id = userInfoRepository.save(user).getId();

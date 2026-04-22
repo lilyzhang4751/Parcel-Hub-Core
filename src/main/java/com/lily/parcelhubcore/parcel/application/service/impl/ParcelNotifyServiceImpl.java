@@ -44,6 +44,6 @@ public class ParcelNotifyServiceImpl implements ParcelNotifyService {
         var content = notifyBuilder.buildSmsContent(stationCode,parcel.getPickupCode());
         notifyRecord.setContent(content);
         parcelNotifyRecordRepository.save(notifyRecord);
-        // todo 实际发送消息给下游调三方接口发短信
+        // 实际发送消息给下游调三方接口发短信
     }
 }

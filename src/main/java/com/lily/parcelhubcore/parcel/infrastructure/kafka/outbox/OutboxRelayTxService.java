@@ -28,11 +28,11 @@ public class OutboxRelayTxService {
     private int retryBaseSeconds;
 
     @Resource
-    private MessageOutboxRepository outboxRepository;
+    private MessageOutboxRepository messageOutboxRepository;
 
     @Transactional
     public List<MessageOutbox> claimBatch() {
-        var rows = outboxRepository.findReadyForPublish(
+        var rows = messageOutboxRepository.findReadyForPublish(
                 List.of(
                         MessageOutbox.Status.NEW.name(),
                         MessageOutbox.Status.FAILED.name()
@@ -51,27 +51,28 @@ public class OutboxRelayTxService {
             var currentRetry = row.getRetryCount() == null ? 0 : row.getRetryCount();
             row.setStatus(MessageOutbox.Status.PROCESSING);
             row.setRetryCount(currentRetry + 1);
+            row.setProcessingAt(Instant.now());
         }
 
         // 显式落库
-        return outboxRepository.saveAllAndFlush(rows);
+        return messageOutboxRepository.saveAllAndFlush(rows);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markSent(Long id) {
-        var row = outboxRepository.findById(id)
+        var row = messageOutboxRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("outbox not found: " + id));
 
         row.setStatus(MessageOutbox.Status.SENT);
         row.setPublishedAt(Instant.now());
         row.setLastError(null);
 
-        outboxRepository.saveAndFlush(row);
+        messageOutboxRepository.saveAndFlush(row);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markFailed(Long id, Exception ex) {
-        var row = outboxRepository.findById(id)
+        var row = messageOutboxRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("outbox not found: " + id));
 
         var retryCount = row.getRetryCount() == null ? 0 : row.getRetryCount();
@@ -81,7 +82,22 @@ public class OutboxRelayTxService {
         row.setLastError(truncateError(ex));
         row.setNextRetryAt(Instant.now().plusSeconds(delaySeconds));
 
-        outboxRepository.saveAndFlush(row);
+        messageOutboxRepository.saveAndFlush(row);
+    }
+
+    @Transactional
+    public int recoverTimedOutProcessing(int timeoutSeconds, int limit) {
+        Instant now = Instant.now();
+        Instant deadline = now.minusSeconds(timeoutSeconds);
+
+        return messageOutboxRepository.recoverTimedOutProcessing(
+                MessageOutbox.Status.PROCESSING.name(),
+                MessageOutbox.Status.FAILED.name(),
+                deadline,
+                now,
+                "processing timeout, auto recovered",
+                limit
+        );
     }
 
     private String truncateError(Exception ex) {

@@ -1,5 +1,7 @@
 package com.lily.parcelhubcore.parcel.infrastructure.kafka.producer;
 
+import java.time.Instant;
+
 import com.lily.parcelhubcore.parcel.domain.dto.DomainEvent;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.MessageOutbox;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.MessageOutboxRepository;
@@ -25,6 +27,7 @@ public class OutboxDomainEventPublisher {
         outbox.setCreatedAt(event.createdAt());
         outbox.setStatus(MessageOutbox.Status.NEW);
         outbox.setPayload(payload);
+        outbox.setNextRetryAt(Instant.now());
         outboxRepository.save(outbox);
     }
 }

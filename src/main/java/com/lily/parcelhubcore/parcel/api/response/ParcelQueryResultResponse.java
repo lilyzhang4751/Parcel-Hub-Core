@@ -19,5 +19,5 @@ public class ParcelQueryResultResponse implements Serializable {
 
     private int total;
 
-    private List<ParcelInfoDTO> parcelList;
+    private List<ParcelBaseInfoDTO> parcelList;
 }

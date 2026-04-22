@@ -49,6 +49,9 @@ public class MessageOutbox {
     @Column(name = "status")
     private Status status;
 
+    @Column(name = "processing_at")
+    private Instant processingAt;
+
     @Column(name = "retry_count")
     private Integer retryCount;
 
@@ -60,6 +63,9 @@ public class MessageOutbox {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     @Column(name = "published_at")
     private Instant publishedAt;

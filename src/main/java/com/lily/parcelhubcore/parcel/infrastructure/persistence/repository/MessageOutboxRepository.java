@@ -1,11 +1,11 @@
 package com.lily.parcelhubcore.parcel.infrastructure.persistence.repository;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.MessageOutbox;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageOutboxRepository extends JpaRepository<MessageOutbox, Long> {
 
-    // @Lock(PESSIMISTIC_WRITE)：当查出这些行时，立刻对这些行加悲观写锁，直到事务结束
     @Query(value = """
             select *
             from message_outbox o
@@ -30,4 +29,29 @@ public interface MessageOutboxRepository extends JpaRepository<MessageOutbox, Lo
             @Param("maxRetry") int maxRetry,
             @Param("limit") int limit
     );
+
+    @Modifying
+    @Query(value = """
+            UPDATE message_outbox
+            SET status = :failedStatus,
+                last_error = :lastError,
+                next_retry_at = :now
+            WHERE id IN (
+                SELECT id
+                FROM message_outbox
+                WHERE status = :processingStatus
+                  AND processing_at IS NOT NULL
+                  AND processing_at < :deadline
+                ORDER BY processing_at
+                LIMIT :limit
+                FOR UPDATE SKIP LOCKED
+            )
+            """, nativeQuery = true)
+    int recoverTimedOutProcessing(@Param("processingStatus") String processingStatus,
+                                  @Param("failedStatus") String failedStatus,
+                                  @Param("deadline") Instant deadline,
+                                  @Param("now") Instant now,
+                                  @Param("lastError") String lastError,
+                                  @Param("limit") int limit);
+
 }

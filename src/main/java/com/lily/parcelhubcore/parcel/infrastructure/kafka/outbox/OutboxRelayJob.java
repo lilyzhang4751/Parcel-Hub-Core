@@ -14,12 +14,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 @Slf4j
-@Service
-public class OutboxRelayService {
+@Component
+public class OutboxRelayJob {
 
     @Resource
     private OutboxRelayTxService outboxRelayTxService;

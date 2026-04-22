@@ -7,12 +7,14 @@ import static com.lily.parcelhubcore.parcel.common.constants.Constants.SHELF_COD
 import java.io.Serial;
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
+@Schema(description = "包裹入库请求")
 public class InboundRequest implements Serializable {
 
     @Serial

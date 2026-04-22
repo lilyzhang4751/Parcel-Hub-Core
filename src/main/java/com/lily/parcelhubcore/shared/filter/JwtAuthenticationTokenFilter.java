@@ -120,7 +120,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(requestId)) {
             return requestId;
         }
-        // todo
         return UUID.randomUUID().toString().replace("-", "");
     }
 

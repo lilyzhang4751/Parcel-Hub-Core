@@ -45,15 +45,15 @@ public class ParcelDomainService {
 
     public Parcel getInboundParcelDO(String stationCode, String waybillCode) {
         // 查询包裹是否存在
-        var parcel = parcelRepository.findFirstByStationCodeAndWaybillCode(stationCode, waybillCode);
-        if (parcel == null) {
+        var parcel = parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode);
+        if (parcel.isEmpty()) {
             throw new BusinessException(PARCEL_NOT_EXIST);
         }
         // 包裹是否还在库
-        if (!Objects.equals(parcel.getStatus(), WaybillStatusEnum.INBOUND.getCode())) {
+        if (!Objects.equals(parcel.get().getStatus(), WaybillStatusEnum.INBOUND.getCode())) {
             throw new BusinessException(PARCEL_NOT_INBOUND);
         }
-        return parcel;
+        return parcel.get();
     }
 
     @Transactional

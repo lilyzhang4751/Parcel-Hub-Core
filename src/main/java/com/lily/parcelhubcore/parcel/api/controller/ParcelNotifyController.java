@@ -4,6 +4,7 @@ import com.lily.parcelhubcore.parcel.application.service.ParcelNotifyService;
 import com.lily.parcelhubcore.shared.response.BaseResponse;
 import com.lily.parcelhubcore.shared.response.OpResultResponse;
 import com.lily.parcelhubcore.shared.util.CurrentUserUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @PreAuthorize("hasAnyAuthority('MANAGER')")
 @RequestMapping("/notify")
+@Tag(name = "包裹通知")
 public class ParcelNotifyController {
 
     @Resource

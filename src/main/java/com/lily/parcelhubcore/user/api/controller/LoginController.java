@@ -7,6 +7,7 @@ import com.lily.parcelhubcore.user.api.response.LoginResponse;
 import com.lily.parcelhubcore.shared.response.OpResultResponse;
 import com.lily.parcelhubcore.user.application.command.UserRegisterCommand;
 import com.lily.parcelhubcore.user.application.service.LoginService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "用户管理")
 public class LoginController {
 
     @Resource

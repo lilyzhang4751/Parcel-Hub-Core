@@ -7,6 +7,7 @@ import static com.lily.parcelhubcore.parcel.common.constants.Constants.SHELF_COD
 import com.lily.parcelhubcore.shared.enums.NotifyStatusEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillStatusEnum;
 import com.lily.parcelhubcore.shared.validate.annotation.EnumIntCode;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -17,6 +18,7 @@ import lombok.Data;
 import org.springframework.util.StringUtils;
 
 @Data
+@Schema(description = "分页查询请求")
 public class PageQueryRequest {
 
     @Pattern(regexp = SHELF_CODE_REGEXP, message = "货架号格式错误")

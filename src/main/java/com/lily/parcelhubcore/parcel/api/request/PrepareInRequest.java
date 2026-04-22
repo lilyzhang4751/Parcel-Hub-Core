@@ -6,12 +6,14 @@ import static com.lily.parcelhubcore.parcel.common.constants.Constants.SHELF_COD
 import java.io.Serial;
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
+@Schema(description = "包裹预处理请求")
 public class PrepareInRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 6960634266531481436L;
