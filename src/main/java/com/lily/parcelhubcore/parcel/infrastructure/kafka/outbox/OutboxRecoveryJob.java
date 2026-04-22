@@ -24,6 +24,8 @@ public class OutboxRecoveryJob {
     @Scheduled(fixedDelayString = "${app.outbox.recovery-s}", timeUnit = TimeUnit.SECONDS)
     public void recoverTimedOutProcessing() {
         var count = outboxRelayTxService.recoverTimedOutProcessing(timeoutSeconds, batchSize);
-        log.info("[OutboxRecoveryJob][共恢复数据{}条]", count);
+        if (count > 0) {
+            log.info("[OutboxRecoveryJob][共恢复数据{}条]", count);
+        }
     }
 }

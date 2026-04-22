@@ -37,10 +37,10 @@ public class OutboxRelayJob {
             return;
         }
 
-        // todo 理解
         var groupedByKey = batch.stream()
                 .collect(Collectors.groupingBy(item -> String.valueOf(item.getEventKey())));
 
+        // todo 理解
         var futures = groupedByKey.values().stream()
                 .map(group -> CompletableFuture.runAsync(() -> processGroup(group), outboxRelayExecutor)
                         .exceptionally(ex -> {

@@ -1,5 +1,7 @@
 package com.lily.parcelhubcore.shared.filter;
 
+import static com.lily.parcelhubcore.shared.constants.Contants.MDC_REQUEST_ID;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
@@ -25,6 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 @Slf4j
 @Component
@@ -37,7 +41,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private static final String HEADER_REAL_IP = "X-Real-IP";
     private static final String HEADER_TOKEN = "token";
 
-    private static final String MDC_REQUEST_ID = "requestId";
     private static final String MDC_USER_ID = "userId";
     private static final String MDC_CLIENT_IP = "clientIp";
 
