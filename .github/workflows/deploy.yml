@@ -1,0 +1,19 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: parcel-hub-core-jar
+          path: dist
+
+      - name: Show artifact
+        run: ls -lh dist
