@@ -73,10 +73,6 @@ public class ParcelQueryServiceImpl implements ParcelQueryService {
                 predicates.add(cb.equal(root.get("pickupCode"), query.getPickupCode()));
             }
 
-            if (StringUtils.hasText(query.getMobile())) {
-                predicates.add(cb.equal(root.get("recipientMobile"), query.getMobile()));
-            }
-
             if (query.getWaybillStatus() != null) {
                 predicates.add(cb.equal(root.get("status"), query.getWaybillStatus()));
             }

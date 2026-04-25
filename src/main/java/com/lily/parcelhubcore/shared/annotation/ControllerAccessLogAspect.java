@@ -26,7 +26,7 @@ public class ControllerAccessLogAspect {
     @Around("execution(* com.lily.parcelhubcore.parcel.api.controller..*.*(..))")
     public Object logController(ProceedingJoinPoint joinPoint) throws Throwable {
         String requestId = MDC.get(MDC_REQUEST_ID);
-        String className = joinPoint.getSignature().getDeclaringTypeName();
+        String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
 
         String argsJson = toJson(filterArgs(joinPoint.getArgs()));

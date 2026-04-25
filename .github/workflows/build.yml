@@ -23,8 +23,5 @@ jobs:
       - name: Package application
         run: mvn -B clean package -DskipTests
 
-      - name: Upload jar artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: parcel-hub-core-jar
-          path: target/*.jar
+      - name: Build Docker image
+        run: docker build -t parcel-hub-core:latest .

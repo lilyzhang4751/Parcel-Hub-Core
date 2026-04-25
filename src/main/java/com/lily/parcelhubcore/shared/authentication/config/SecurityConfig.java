@@ -5,6 +5,9 @@ import com.lily.parcelhubcore.shared.handler.CustomAccessDeniedHandler;
 import com.lily.parcelhubcore.shared.handler.CustomAuthenticationEntryPoint;
 import jakarta.annotation.Resource;
 import jakarta.servlet.DispatcherType;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus.PrometheusScrapeEndpoint;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+
 
 @Configuration
 @EnableWebSecurity
@@ -52,8 +56,14 @@ public class SecurityConfig {
 
                 // 3. 权限配置
                 .authorizeHttpRequests(auth -> auth
+                        // 健康检查：部署平台需要访问
+                        .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
+
+                        // Prometheus 抓指标：开发阶段可以放行；生产建议限制内网/IP/网关
+                        .requestMatchers(EndpointRequest.to(PrometheusScrapeEndpoint.class)).permitAll()
+
                         // 放行 open api
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**","/actuator/**").permitAll()
                         /*
                         Spring Boot 默认保护 /error，而 Spring Security 默认也会对 ERROR dispatcher 做授权检查
                         对ERROR和FORWARD放行，不再鉴权，防止出现异常时，再次进入认证流程

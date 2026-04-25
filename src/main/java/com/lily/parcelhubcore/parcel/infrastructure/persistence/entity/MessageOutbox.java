@@ -9,7 +9,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,7 +40,6 @@ public class MessageOutbox {
     @Column(name = "event_key")
     private String eventKey;
 
-    @Lob
     @Column(name = "payload")
     private String payload;
 
@@ -69,23 +67,6 @@ public class MessageOutbox {
 
     @Column(name = "published_at")
     private Instant publishedAt;
-
-    public void markProcessing() {
-        this.status = Status.PROCESSING;
-        this.retryCount++;
-    }
-
-    public void markSent(Instant publishedAt) {
-        this.status = Status.SENT;
-        this.publishedAt = publishedAt;
-        this.lastError = null;
-    }
-
-    public void markFailed(String error, Instant nextRetryAt) {
-        this.status = Status.FAILED;
-        this.lastError = error;
-        this.nextRetryAt = nextRetryAt;
-    }
 
     public enum Status {
         NEW, PROCESSING, SENT, FAILED

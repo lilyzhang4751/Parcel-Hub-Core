@@ -105,6 +105,6 @@ public class OutboxRelayTxService {
             return "unknown error";
         }
         String msg = ex.getMessage();
-        return msg.length() <= 1000 ? msg : msg.substring(0, 1000);
+        return msg.length() <= 500 ? msg : msg.substring(0, 500);
     }
 }

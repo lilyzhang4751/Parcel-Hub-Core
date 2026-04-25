@@ -16,8 +16,6 @@ public class ParcelPageQuery {
 
     private String pickupCode;
 
-    private String mobile;
-
     private Integer waybillStatus;
 
     private Integer notifyStatus;
@@ -27,6 +25,5 @@ public class ParcelPageQuery {
 
     @NotNull
     private Integer pageSize;
-
 
 }

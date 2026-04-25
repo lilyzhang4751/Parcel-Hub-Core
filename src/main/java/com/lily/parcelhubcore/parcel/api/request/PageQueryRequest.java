@@ -1,6 +1,5 @@
 package com.lily.parcelhubcore.parcel.api.request;
 
-import static com.lily.parcelhubcore.parcel.common.constants.Constants.MOBILE_REGEXP;
 import static com.lily.parcelhubcore.parcel.common.constants.Constants.PICKUP_CODE_REGEXP;
 import static com.lily.parcelhubcore.parcel.common.constants.Constants.SHELF_CODE_REGEXP;
 
@@ -27,9 +26,6 @@ public class PageQueryRequest {
     @Pattern(regexp = PICKUP_CODE_REGEXP, message = "取件码格式错误")
     private String pickupCode;
 
-    @Pattern(regexp = MOBILE_REGEXP, message = "手机号非法")
-    private String mobile;
-
     @EnumIntCode(enumClass = WaybillStatusEnum.class, message = "运单状态不合法")
     private Integer waybillStatus;
 
@@ -49,7 +45,6 @@ public class PageQueryRequest {
     public boolean isAtLeastOneConditionProvided() {
         return StringUtils.hasText(shelfCode)
                 || StringUtils.hasText(pickupCode)
-                || StringUtils.hasText(mobile)
                 || waybillStatus != null
                 || notifyStatus != null;
     }

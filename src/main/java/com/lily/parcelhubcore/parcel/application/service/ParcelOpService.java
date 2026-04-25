@@ -7,12 +7,12 @@ import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 
 public interface ParcelOpService {
 
-    public PrepareInDTO prepareIn(PrepareInCommand bo);
+    PrepareInDTO prepareIn(PrepareInCommand bo);
 
-    public void inbound(ParcelInBoundCommand command);
+    void inbound(ParcelInBoundCommand command);
 
-    public void outBoundOrReturn(String waybillCode, OperateTypeEnum operateTypeEnum);
+    void outBoundOrReturn(String waybillCode, OperateTypeEnum operateTypeEnum);
 
-    public void transfer(String waybillCode, String shelfCode);
+    void transfer(String waybillCode, String shelfCode);
 
 }
