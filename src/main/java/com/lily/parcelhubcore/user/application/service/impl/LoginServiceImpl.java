@@ -39,6 +39,9 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     private StationInfoRepository stationInfoRepository;
 
+    @Resource
+    private JwtUtils jwtUtils;
+
     @Override
     @Transactional
     public void register(UserRegisterCommand command) {
@@ -75,7 +78,7 @@ public class LoginServiceImpl implements LoginService {
         cacheService.set(KeyConstants.getLoginRedisKey(userCode), loginUser);
 
         // jwt用userCode生成token
-        return JwtUtils.generateToken(userCode);
+        return jwtUtils.generateToken(userCode);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.lily.parcelhubcore.shared.response.BaseResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public BaseResponse<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult()
+        var message = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -67,6 +68,18 @@ public class GlobalExceptionHandler {
 
     /**
      * 4. 兜底异常：所有未预期异常
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public BaseResponse<Void> handleAccessDeniedException(Exception ex) {
+        log.error("access denied", ex);
+        return BaseResponse.fail(
+                ErrorCode.ACCESS_DENIED.getCode(),
+                ErrorCode.ACCESS_DENIED.getMessage()
+        );
+    }
+
+    /**
+     * 5. 兜底异常：所有未预期异常
      */
     @ExceptionHandler(Exception.class)
     public BaseResponse<Void> handleException(Exception ex) {

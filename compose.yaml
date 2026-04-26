@@ -98,14 +98,12 @@ services:
 
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/parcelhub
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      # todo
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
 
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      # todo 改成写在 .env / .env.prod，由 Compose 注入
       APP_CRYPTO_PASSWORD: ${APP_CRYPTO_PASSWORD}
       APP_CRYPTO_SALT: ${APP_CRYPTO_SALT}
 

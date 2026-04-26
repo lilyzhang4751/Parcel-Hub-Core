@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.lily.parcelhubcore.shared.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,8 +30,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
         // 构建统一 JSON 错误响应
         Map<String, Object> errorBody = new HashMap<>();
-        errorBody.put("code", 403);
-        errorBody.put("message", "权限不足，请联系管理员");
+        errorBody.put("code", ErrorCode.ACCESS_DENIED.getCode());
+        errorBody.put("message", ErrorCode.ACCESS_DENIED.getMessage());
         errorBody.put("timestamp", System.currentTimeMillis());
 
         // 写入响应体

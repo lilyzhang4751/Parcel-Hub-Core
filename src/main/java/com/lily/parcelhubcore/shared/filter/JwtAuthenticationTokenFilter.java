@@ -27,8 +27,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 @Slf4j
 @Component
@@ -50,6 +48,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Resource
     private CacheService cacheService;
 
+    @Resource
+    private JwtUtils jwtUtils;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var start = System.currentTimeMillis();
@@ -69,7 +70,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 return;
             }
             // 解析token
-            var claims = JwtUtils.parseToken(token);
+            var claims = jwtUtils.parseToken(token);
             var userCode = claims.getSubject();
             MDC.put(MDC_USER_ID, userCode);
             // 从redis获取用户信息
