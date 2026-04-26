@@ -37,7 +37,7 @@ jobs:
 
       - name: Set Docker image name
         run: |
-          IMAGE_NAME="ghcr.io/${GITHUB_REPOSITORY,,}"
+          IMAGE_NAME=$(echo "ghcr.io/${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
           echo "APP_IMAGE=$IMAGE_NAME:${{ inputs.image_tag }}" >> "$GITHUB_ENV"
 
       - name: Login to GitHub Container Registry
