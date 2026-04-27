@@ -5,7 +5,7 @@ import com.lily.parcelhubcore.user.infrastructure.persistence.entity.StationInfo
 
 public interface StationService {
 
-    void register(StationRegisterCommand command);
+    String register(StationRegisterCommand command);
 
     StationInfoDO queryByStationCode(String stationCode);
 

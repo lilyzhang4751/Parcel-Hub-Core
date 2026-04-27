@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class LoginResponse implements Serializable {
+
     @Serial
     private static final long serialVersionUID = -5824194365333926504L;
 

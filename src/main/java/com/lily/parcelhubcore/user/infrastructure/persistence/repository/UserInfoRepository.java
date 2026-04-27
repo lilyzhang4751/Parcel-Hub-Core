@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserInfoRepository extends JpaRepository<UserInfoDO, Long>, JpaSpecificationExecutor<UserInfoDO> {
 
-    UserInfoDO findByCode(String code);
-
     UserInfoDO findByUsername(String username);
+
+    boolean existsByUsername(String username);
 }

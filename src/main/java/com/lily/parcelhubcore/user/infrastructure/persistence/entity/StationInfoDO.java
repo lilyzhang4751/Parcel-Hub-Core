@@ -46,6 +46,9 @@ public class StationInfoDO {
     @Column(name = "contact_mobile")
     private String contactMobile;
 
+    @Column(name = "mobile_hash")
+    private String mobileHash;
+
     @Column(name = "active_time")
     private Instant activeTime;
 

@@ -34,6 +34,7 @@ jobs:
           SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
           APP_CRYPTO_PASSWORD=${{ secrets.APP_CRYPTO_PASSWORD }}
           APP_CRYPTO_SALT=${{ secrets.APP_CRYPTO_SALT }}
+          app_crypto_hash_secret=${{ secrets.APP_CRYPTO_HASH_SECRET }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           EOF
 

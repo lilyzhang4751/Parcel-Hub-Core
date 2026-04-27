@@ -12,6 +12,8 @@ public class StationRegisterCommand {
 
     private String principal;
 
+    private String password;
+
     private String contactMobile;
 
     private BigDecimal longitude;

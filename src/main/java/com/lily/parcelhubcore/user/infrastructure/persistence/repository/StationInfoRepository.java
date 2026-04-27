@@ -11,4 +11,6 @@ public interface StationInfoRepository extends JpaRepository<StationInfoDO, Long
     StationInfoDO findByCode(String code);
 
     boolean existsByCodeAndStatus(String code, Integer status);
+
+    boolean existsByMobileHash(String mobileHash);
 }

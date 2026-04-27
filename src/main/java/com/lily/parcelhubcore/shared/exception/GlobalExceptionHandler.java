@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -67,7 +68,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 4. 兜底异常：所有未预期异常
+     * 4. @PreAuthorize 权限异常
      */
     @ExceptionHandler(AccessDeniedException.class)
     public BaseResponse<Void> handleAccessDeniedException(Exception ex) {
@@ -79,7 +80,19 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 5. 兜底异常：所有未预期异常
+     * 5. 用户不存在等鉴权异常
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public BaseResponse<Void> handleAuthenticationException(Exception ex) {
+        log.error("access denied", ex);
+        return BaseResponse.fail(
+                ErrorCode.AUTHENTICATION_FAILED.getCode(),
+                ErrorCode.AUTHENTICATION_FAILED.getMessage()
+        );
+    }
+
+    /**
+     * 6. 兜底异常：所有未预期异常
      */
     @ExceptionHandler(Exception.class)
     public BaseResponse<Void> handleException(Exception ex) {

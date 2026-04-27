@@ -9,7 +9,6 @@ public enum ErrorCode implements CommonErrorCode {
     INTERNAL_ERROR("INTERNAL_ERROR", "系统内部错误"),
     AUTHENTICATION_FAILED("AUTHENTICATION_FAILED", "认证失败，请重新登录"),
     ACCESS_DENIED("403", "权限不足，请联系管理员"),
-
     ;
 
     private final String code;

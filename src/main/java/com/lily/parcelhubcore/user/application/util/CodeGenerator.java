@@ -9,13 +9,13 @@ public class CodeGenerator {
             throw new IllegalArgumentException("id must be positive");
         }
         ;
-        return "ST" + String.format("%07d", id) + new Random().nextInt(1000);
+        return "ST" + String.format("%07d", id) + String.format("%03d", new Random().nextInt(1000));
     }
 
     public static String buildUserCode(Long id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("id must be positive");
         }
-        return "U" + String.format("%07d", id) + new Random().nextInt(1000);
+        return "U" + String.format("%07d", id) + String.format("%03d", new Random().nextInt(1000));
     }
 }

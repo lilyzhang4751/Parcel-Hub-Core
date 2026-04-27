@@ -177,7 +177,8 @@ CREATE TABLE station_info
     "name"              varchar(255)                          NOT NULL,
     status              int4        DEFAULT 0                 NOT NULL,
     principal           varchar(255) NULL,
-    contact_mobile      varchar(255) NULL,
+    contact_mobile      varchar(255)                          NOT NULL,
+    mobile_hash         varchar(255)                          NOT NULL,
     address             varchar(255) NULL,
     longitude           numeric(38, 2) NULL,
     latitude            numeric(38, 2) NULL,
@@ -189,6 +190,7 @@ CREATE TABLE station_info
     created_at          timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at          timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT station_info_code_key UNIQUE (code),
+    CONSTRAINT station_info_mobile_key UNIQUE (mobile_hash),
     CONSTRAINT station_info_pkey PRIMARY KEY (id)
 );
 -- Table Triggers
@@ -218,12 +220,13 @@ CREATE TABLE user_info
     code         varchar(50) NULL,
     username     varchar(100)                          NOT NULL,
     station_code varchar(50)                           NOT NULL,
-    "role"       varchar(20) DEFAULT '1'               NOT NULL,
+    "role"       varchar(20) DEFAULT 'STAFF'           NOT NULL,
     status       int4        DEFAULT 0                 NOT NULL,
     "password"   varchar(255)                          NOT NULL,
     created_at   timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT user_info_code_key UNIQUE (code),
+    CONSTRAINT user_info_username_key UNIQUE (username),
     CONSTRAINT user_info_pkey PRIMARY KEY (id)
 );
 -- Table Triggers

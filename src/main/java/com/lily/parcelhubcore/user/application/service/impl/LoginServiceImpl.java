@@ -1,6 +1,7 @@
 package com.lily.parcelhubcore.user.application.service.impl;
 
 import static com.lily.parcelhubcore.shared.exception.ErrorCode.AUTHENTICATION_FAILED;
+import static com.lily.parcelhubcore.user.common.ErrorCode.USERNAME_DUPLICATE;
 
 import com.lily.parcelhubcore.shared.authentication.dto.LoginUser;
 import com.lily.parcelhubcore.shared.cache.CacheService;
@@ -45,6 +46,10 @@ public class LoginServiceImpl implements LoginService {
     @Override
     @Transactional
     public void register(UserRegisterCommand command) {
+        var username = command.getUsername();
+        if (userInfoRepository.existsByUsername(username)) {
+            throw new BusinessException(USERNAME_DUPLICATE);
+        }
         var stationCode = command.getStationCode();
         var stationExist = stationInfoRepository.existsByCodeAndStatus(stationCode, StationStatusEnum.OPERATION.getCode());
         if (!stationExist) {
