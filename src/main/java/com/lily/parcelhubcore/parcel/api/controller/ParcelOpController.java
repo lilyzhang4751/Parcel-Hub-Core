@@ -1,5 +1,7 @@
 package com.lily.parcelhubcore.parcel.api.controller;
 
+import static com.lily.parcelhubcore.parcel.common.constants.Constants.SHELF_CODE_REGEXP;
+
 import com.lily.parcelhubcore.parcel.api.request.InboundRequest;
 import com.lily.parcelhubcore.parcel.api.request.PrepareInRequest;
 import com.lily.parcelhubcore.parcel.api.response.PrepareInResponse;
@@ -13,13 +15,17 @@ import com.lily.parcelhubcore.shared.util.CurrentUserUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @PreAuthorize("hasAnyAuthority('MANAGER','STAFF')")
 @RequestMapping("/parcel")
@@ -50,19 +56,21 @@ public class ParcelOpController {
     }
 
     @PostMapping("/outbound")
-    public BaseResponse<OpResultResponse> outbound(String waybillCode) {
+    public BaseResponse<OpResultResponse> outbound(@NotBlank(message = "运单号不能为空") String waybillCode) {
         parcelOpService.outBoundOrReturn(waybillCode, OperateTypeEnum.OUT);
         return BaseResponse.success(OpResultResponse.builder().result(true).build());
     }
 
     @PostMapping("/returned")
-    public BaseResponse<OpResultResponse> returned(String waybillCode) {
+    public BaseResponse<OpResultResponse> returned(@NotBlank(message = "运单号不能为空") String waybillCode) {
         parcelOpService.outBoundOrReturn(waybillCode, OperateTypeEnum.RETURN);
         return BaseResponse.success(OpResultResponse.builder().result(true).build());
     }
 
     @PostMapping("/transfer")
-    public BaseResponse<OpResultResponse> transfer(String waybillCode, String shelfCode) {
+    public BaseResponse<OpResultResponse> transfer(@NotBlank(message = "运单号不能为空") String waybillCode,
+                                                   @NotBlank(message = "货架号不能为空")
+                                                   @Pattern(regexp = SHELF_CODE_REGEXP, message = "货架号格式错误") String shelfCode) {
         parcelOpService.transfer(waybillCode, shelfCode);
         return BaseResponse.success(OpResultResponse.builder().result(true).build());
     }
