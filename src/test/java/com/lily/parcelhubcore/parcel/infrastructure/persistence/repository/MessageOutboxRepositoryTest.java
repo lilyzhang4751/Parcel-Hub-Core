@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -22,12 +23,21 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
-@ActiveProfiles("test")
 @DataJpaTest
+// 负责启动容器
+@Testcontainers
+@ActiveProfiles("test")
 // 不要把真实 DataSource 替换成 H2
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MessageOutboxRepositoryTest {
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer postgres =
+            new PostgreSQLContainer("postgres:16-alpine");
 
     @Autowired
     private MessageOutboxRepository messageOutboxRepository;
@@ -215,15 +225,10 @@ class MessageOutboxRepositoryTest {
 
     /**
      * 测试前：清空旧数据
-     * 测试后：清空本次测试数据
      */
     @Sql(
             statements = "TRUNCATE TABLE message_outbox RESTART IDENTITY CASCADE",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-    )
-    @Sql(
-            statements = "TRUNCATE TABLE message_outbox RESTART IDENTITY CASCADE",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
     @Test
     // 非事务执行，挂起当前事务
