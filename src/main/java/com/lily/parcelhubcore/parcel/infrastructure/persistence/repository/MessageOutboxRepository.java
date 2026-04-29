@@ -20,8 +20,8 @@ public interface MessageOutboxRepository extends JpaRepository<MessageOutbox, Lo
               and (o.next_retry_at <= :now or o.next_retry_at is null)
               and o.retry_count < :maxRetry
             order by o.id asc
-            for update skip locked
             limit :limit
+            for update skip locked
             """, nativeQuery = true)
     List<MessageOutbox> findReadyForPublish(
             @Param("statuses") List<String> statuses,
@@ -30,7 +30,11 @@ public interface MessageOutboxRepository extends JpaRepository<MessageOutbox, Lo
             @Param("limit") int limit
     );
 
-    @Modifying
+    /*
+    flushAutomatically = true	执行 UPDATE 前，先把当前未 flush 的变更刷到数据库
+    clearAutomatically = true	执行 UPDATE 后，清空一级缓存，避免后续查到旧实体
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """
             UPDATE message_outbox
             SET status = :failedStatus,
