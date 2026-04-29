@@ -8,14 +8,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class CurrentUserUtil {
 
     public static LoginUser getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null
                 || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
             throw new IllegalStateException("No authenticated user in SecurityContext");
         }
 
-        Object principal = authentication.getPrincipal();
+        var principal = authentication.getPrincipal();
         if (!(principal instanceof LoginUser loginUser)) {
             throw new IllegalStateException("Current principal is not LoginUser");
         }

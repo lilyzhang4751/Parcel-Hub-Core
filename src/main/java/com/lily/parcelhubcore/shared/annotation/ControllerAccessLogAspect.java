@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
@@ -23,7 +24,11 @@ import org.springframework.validation.BindingResult;
 @RequiredArgsConstructor
 public class ControllerAccessLogAspect {
 
-    @Around("execution(* com.lily.parcelhubcore.parcel.api.controller..*.*(..))")
+    @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
+    public void restControllerClass() {
+    }
+
+    @Around("restControllerClass() && execution(public * *(..))")
     public Object logController(ProceedingJoinPoint joinPoint) throws Throwable {
         String requestId = MDC.get(MDC_REQUEST_ID);
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
