@@ -24,9 +24,9 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Run unit tests
+      - name: Run all tests
         # 执行 Maven 命令; 使用-B batch mode；clean 先清理上次构建产物；test 编译并执行测试
-        run: mvn -B clean test
+        run: mvn -B clean verify
 
       - name: Upload test reports
         # 即使前面失败了，也执行这一步。

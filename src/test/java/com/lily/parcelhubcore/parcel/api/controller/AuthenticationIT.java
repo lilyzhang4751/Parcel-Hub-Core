@@ -14,17 +14,26 @@ import com.lily.parcelhubcore.shared.authentication.dto.LoginUser;
 import com.lily.parcelhubcore.user.infrastructure.persistence.entity.UserInfoDO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.ObjectMapper;
 
+@Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthenticationTest {
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class AuthenticationIT {
 
     private static Authentication authenticationToken;
 
@@ -38,6 +47,12 @@ public class AuthenticationTest {
         LoginUser loginUser = new LoginUser(user, List.of("STAFF"));
         authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
     }
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer postgres =
+            new PostgreSQLContainer("postgres:16-alpine");
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -63,13 +78,11 @@ public class AuthenticationTest {
 
     @Test
     void givenStaffRole_whenAccessStaffEndpoint_thenPassSecurityCheck() throws Exception {
-        mockMvc.perform(post("/parcel/prepare/in")
+        mockMvc.perform(get("/parcels/{waybillCode}", "WB202604290001")
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(minimalRequestJson())
                         .with(authentication(authenticationToken)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("SUCCESS"));
+                .andExpect(jsonPath("$.code").value("PARCEL_NOT_EXIST"));
     }
 
     private String minimalRequestJson() throws Exception {

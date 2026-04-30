@@ -12,12 +12,14 @@ import com.lily.parcelhubcore.parcel.api.request.InboundRequest;
 import com.lily.parcelhubcore.shared.authentication.dto.LoginUser;
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
 import com.lily.parcelhubcore.user.infrastructure.persistence.entity.UserInfoDO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,9 +27,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 import tools.jackson.databind.ObjectMapper;
 
 @Testcontainers
@@ -44,12 +48,18 @@ import tools.jackson.databind.ObjectMapper;
         },
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
-public class ParcelOpControllerIntegrationTest {
+public class ParcelOpControllerIT {
 
     @Container
     @ServiceConnection
     static PostgreSQLContainer postgres =
             new PostgreSQLContainer("postgres:16-alpine");
+
+    @Container
+    @ServiceConnection
+    static GenericContainer<?> redis =
+            new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
+                    .withExposedPorts(6379);
 
     private static Authentication authenticationToken;
 
@@ -65,11 +75,22 @@ public class ParcelOpControllerIntegrationTest {
     }
 
     @Autowired
+    StringRedisTemplate stringRedisTemplate;
+    @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void cleanRedis() {
+        stringRedisTemplate
+                .getConnectionFactory()
+                .getConnection()
+                .serverCommands()
+                .flushDb();
+    }
 
     @Test
     void shouldInboundParcelSuccessfully_whenValidRequest() throws Exception {
@@ -137,7 +158,6 @@ public class ParcelOpControllerIntegrationTest {
         var testWaybillCode = request.getWaybillCode();
         jdbcTemplate.update("INSERT INTO waybill_registry (waybill_code, station_code, status) VALUES (?, ?, ?)",
                 testWaybillCode, testStationCode, WaybillRegistryStatusEnum.OCCUPIED.getCode());
-
 
         // when: 执行 HTTP 请求
         mockMvc.perform(post("/parcel/inbound")
