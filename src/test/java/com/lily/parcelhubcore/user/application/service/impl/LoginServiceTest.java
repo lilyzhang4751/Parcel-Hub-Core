@@ -74,6 +74,7 @@ class LoginServiceTest {
 
         userInfoDO = new UserInfoDO();
         userInfoDO.setId(1L);
+        userInfoDO.setCode("U0000001001");
         userInfoDO.setUsername("testuser");
         userInfoDO.setPassword("encodedPassword");
         userInfoDO.setStationCode("ST0000001001");

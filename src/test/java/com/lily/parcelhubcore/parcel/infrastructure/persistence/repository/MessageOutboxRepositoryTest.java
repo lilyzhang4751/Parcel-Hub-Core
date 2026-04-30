@@ -10,12 +10,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.MessageOutbox;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -44,6 +46,14 @@ class MessageOutboxRepositoryTest {
 
     @Autowired
     private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void cleanUp() {
+        jdbcTemplate.execute("truncate table message_outbox restart identity cascade");
+    }
 
     @Test
     void findReadyForPublish_shouldReturnMessages_whenMatchingCriteria() {
