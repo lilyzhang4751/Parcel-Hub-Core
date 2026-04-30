@@ -90,6 +90,9 @@ public class LoginServiceImpl implements LoginService {
     public void logout() {
         // 获取SecurityContextHolder中的用户
         var authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new BusinessException(AUTHENTICATION_FAILED);
+        }
         var loginUser = (LoginUser) authentication.getPrincipal();
         if (loginUser == null) {
             throw new BusinessException(AUTHENTICATION_FAILED);
