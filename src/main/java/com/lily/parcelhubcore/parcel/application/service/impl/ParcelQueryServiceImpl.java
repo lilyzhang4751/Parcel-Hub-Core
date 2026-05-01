@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-@Service
+@Service("parcelQueryService")
 public class ParcelQueryServiceImpl implements ParcelQueryService {
 
     @Resource

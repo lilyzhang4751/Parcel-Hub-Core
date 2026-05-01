@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("parcelOpService")
 public class ParcelOpServiceImpl implements ParcelOpService {
 
     @Resource

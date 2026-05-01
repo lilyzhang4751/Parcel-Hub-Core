@@ -14,7 +14,7 @@ import com.lily.parcelhubcore.shared.util.TimeConvertUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("parcelNotifyService")
 public class ParcelNotifyServiceImpl implements ParcelNotifyService {
 
     @Resource
