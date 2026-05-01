@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.MessageOutbox;
+import com.lily.parcelhubcore.shared.util.TimeConvertUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,8 +127,8 @@ class MessageOutboxRepositoryTest {
     @Test
     void recoverTimedOutProcessing_shouldUpdateMessages_whenTimedOut() {
         // given
-        Instant deadline = Instant.now();
-        Instant now = Instant.now().plusSeconds(60);
+        Instant deadline = TimeConvertUtils.toInstant(System.currentTimeMillis());
+        Instant now = deadline.plusSeconds(60);
         MessageOutbox msg1 = new MessageOutbox();
         msg1.setEventId("event1");
         msg1.setTopic("topic1");
