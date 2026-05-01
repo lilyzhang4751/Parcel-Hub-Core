@@ -30,9 +30,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 import tools.jackson.databind.ObjectMapper;
+
 
 @Testcontainers
 @SpringBootTest
@@ -60,6 +62,11 @@ public class ParcelOpControllerIT {
     static GenericContainer<?> redis =
             new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
                     .withExposedPorts(6379);
+
+    @Container
+    @ServiceConnection
+    static KafkaContainer kafka =
+            new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"));
 
     private static Authentication authenticationToken;
 
