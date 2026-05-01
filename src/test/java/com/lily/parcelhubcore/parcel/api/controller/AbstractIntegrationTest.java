@@ -7,32 +7,35 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Testcontainers
 public abstract class AbstractIntegrationTest {
 
-    @Container
     static final PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"))
                     .withDatabaseName("parcel_test")
                     .withUsername("test")
                     .withPassword("test");
 
-    @Container
     static final GenericContainer<?> redis =
             new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
                     .withExposedPorts(6379);
 
-    @Container
     static final KafkaContainer kafka =
             new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.0"));
+
+    static {
+        Startables.deepStart(postgres, redis, kafka).join();
+
+        System.out.println(">>> Test PostgreSQL JDBC URL: " + postgres.getJdbcUrl());
+        System.out.println(">>> Test Redis: " + redis.getHost() + ":" + redis.getMappedPort(6379));
+        System.out.println(">>> Test Kafka: " + kafka.getBootstrapServers());
+    }
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
