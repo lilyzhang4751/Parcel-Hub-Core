@@ -27,7 +27,7 @@ public abstract class AbstractIntegrationTest {
                     .withExposedPorts(6379);
 
     static final KafkaContainer kafka =
-            new KafkaContainer(DockerImageName.parse("apache/kafka-native:3.8.0"));
+            new KafkaContainer(DockerImageName.parse("apache/kafka:3.7.0"));
 
     static {
         Startables.deepStart(postgres, redis, kafka).join();

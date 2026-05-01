@@ -59,7 +59,7 @@ public class AuthenticationIT extends AbstractIntegrationTest {
 
     @Test
     void givenStaffRole_whenAccessStaffEndpoint_thenPassSecurityCheck() throws Exception {
-        mockMvc.perform(get("/parcels/{waybillCode}", "WB202604290001")
+        mockMvc.perform(get("/parcels/{waybillCode}", "WB202604290000")
                         .with(csrf())
                         .with(authentication(authenticationToken)))
                 .andExpect(status().isOk())
