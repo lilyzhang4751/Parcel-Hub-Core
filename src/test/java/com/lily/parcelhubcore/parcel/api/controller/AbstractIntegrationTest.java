@@ -21,7 +21,7 @@ public abstract class AbstractIntegrationTest {
     @Container
     static final PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"))
-                    .withDatabaseName("parcelhub_test")
+                    .withDatabaseName("parcel_test")
                     .withUsername("test")
                     .withPassword("test");
 
