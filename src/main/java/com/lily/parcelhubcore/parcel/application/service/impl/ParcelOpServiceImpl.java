@@ -3,6 +3,7 @@ package com.lily.parcelhubcore.parcel.application.service.impl;
 import static com.lily.parcelhubcore.parcel.common.constants.Constants.LOCK_TIME;
 import static com.lily.parcelhubcore.parcel.common.constants.Constants.PICKUP_CACHE_HOURS;
 import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.PARCEL_NOT_EXIST;
+import static com.lily.parcelhubcore.parcel.common.enums.ErrorCode.SAME_SHELF_CODE;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.Waybi
 import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
+import com.lily.parcelhubcore.shared.enums.WaybillStatusEnum;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.shared.lock.Lock;
 import com.lily.parcelhubcore.shared.util.CurrentUserUtil;
@@ -127,16 +129,24 @@ public class ParcelOpServiceImpl implements ParcelOpService {
                 throw new BusinessException(ErrorCode.CURRENT_EXCEPTION);
             }
             var stationCode = CurrentUserUtil.getStationCode();
+            // 查询包裹是否存在
+            var parcel = parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode);
+            if (parcel.isEmpty()) {
+                throw new BusinessException(PARCEL_NOT_EXIST);
+            }
+            if (Objects.equals(parcel.get().getStatus(), WaybillStatusEnum.OUTBOUND.getCode())
+                    || Objects.equals(parcel.get().getStatus(), WaybillStatusEnum.RETURNED.getCode())) {
+                // 已经是出库/退回状态，无需重复操作——幂等
+                return;
+            }
             // 查询注册表状态是否正常
             var waybillRegistry = waybillRegistryRepository.findByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode());
             if (waybillRegistry == null || !Objects.equals(waybillRegistry.getStationCode(), stationCode)) {
                 throw new BusinessException(PARCEL_NOT_EXIST);
             }
 
-            // 查询在库包裹
-            var parcel = parcelDomainService.getInboundParcelDO(stationCode, waybillCode);
             // 构建数据库操作对象和消息体
-            var packDTO = packageBuilder.buildParcelPackByType(waybillRegistry, parcel, operateTypeEnum);
+            var packDTO = packageBuilder.buildParcelPackByType(waybillRegistry, parcel.get(), operateTypeEnum);
             // 事务内更新数据库，发送消息
             parcelDomainService.updateDBAndSendMsg(packDTO);
         } finally {
@@ -155,8 +165,11 @@ public class ParcelOpServiceImpl implements ParcelOpService {
             var stationCode = CurrentUserUtil.getStationCode();
             // 查询在库包裹
             var parcel = parcelDomainService.getInboundParcelDO(stationCode, waybillCode);
+            // 包裹现有货架和移库货架相同
+            if (Objects.equals(parcel.getShelfCode(), shelfCode)) {
+                throw new BusinessException(SAME_SHELF_CODE);
+            }
             // 移库重新生成取件码
-            //  生成取件码
             var newPickupCode = pickupCodeService.genarate(stationCode, shelfCode);
             // 构建数据库操作对象和消息体
             var packDTO = packageBuilder.buildTransferParcelPackDTO(parcel, shelfCode, newPickupCode);

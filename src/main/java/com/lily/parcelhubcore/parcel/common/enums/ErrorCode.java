@@ -14,7 +14,8 @@ public enum ErrorCode implements CommonErrorCode {
     PARCEL_NOT_EXIST("PARCEL_NOT_EXIST", "包裹不存在"),
     PARCEL_NOT_INBOUND("PARCEL_NOT_INBOUND", "包裹不在库，无法操作"),
     NO_AVAILABLE_PICKUP("NO_AVAILABLE_PICKUP", "没有可用取件码，请修改货架号"),
-    PICKUP_OCCUPIED("PICKUP_OCCUPIED", "取件码重复，请修改取件码后再入库");
+    PICKUP_OCCUPIED("PICKUP_OCCUPIED", "取件码重复，请修改取件码后再入库"),
+    SAME_SHELF_CODE("SAME_SHELF_CODE", "新货架号和原货架号相同，请修改");
 
     private final String code;
 
