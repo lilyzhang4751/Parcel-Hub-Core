@@ -41,7 +41,7 @@ public class ParcelNotifyServiceImpl implements ParcelNotifyService {
         notifyRecord.setChannel(NotifyChannelEnum.SMS.getDesc());
         notifyRecord.setUniqueId(UUID.randomUUID().toString());
         notifyRecord.setStatus(NotifyStatusEnum.NOTIFYING.getCode());
-        var content = notifyBuilder.buildSmsContent(stationCode,parcel.getPickupCode());
+        var content = notifyBuilder.buildSmsContent(stationCode, parcel.getPickupCode());
         notifyRecord.setContent(content);
         parcelNotifyRecordRepository.save(notifyRecord);
         // 实际发送消息给下游调三方接口发短信

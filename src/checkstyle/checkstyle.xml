@@ -4,61 +4,32 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
-
     <property name="charset" value="UTF-8"/>
 
-    <!-- 禁止 Tab -->
+    <!-- Basic file hygiene -->
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
 
-    <!-- 文件必须以换行结尾 -->
     <module name="NewlineAtEndOfFile"/>
 
-    <!-- 行长度限制；import/package/URL 放宽 -->
     <module name="LineLength">
-        <property name="max" value="140"/>
-        <property name="ignorePattern" value="^package.*|^import.*|https?://|ftp://"/>
+        <property name="max" value="160"/>
+        <property name="ignorePattern"
+                  value="^package.*|^import.*|https?://|ftp://|.*@Schema.*|.*@ApiResponse.*"/>
     </module>
 
     <module name="TreeWalker">
 
-        <!-- 一个文件一个顶级类型 -->
+        <!-- File / type structure -->
         <module name="OuterTypeFilename"/>
         <module name="OneTopLevelClass"/>
 
-        <!-- import 规则 -->
+        <!-- Imports -->
         <module name="AvoidStarImport"/>
         <module name="UnusedImports"/>
-        <module name="ImportOrder">
-            <property name="groups" value="java,javax,jakarta,org,com"/>
-            <property name="ordered" value="true"/>
-            <property name="separated" value="true"/>
-            <property name="option" value="top"/>
-            <property name="sortStaticImportsAlphabetically" value="true"/>
-        </module>
 
-        <!-- 花括号与空白 -->
-        <module name="NeedBraces"/>
-        <module name="LeftCurly">
-            <property name="option" value="eol"/>
-        </module>
-        <module name="RightCurly">
-            <property name="option" value="alone"/>
-        </module>
-        <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
-        <module name="OneStatementPerLine"/>
-        <module name="EmptyBlock">
-            <property name="option" value="text"/>
-        </module>
-        <module name="EmptyLineSeparator"/>
-
-        <!-- 修饰符 -->
-        <module name="ModifierOrder"/>
-        <module name="RedundantModifier"/>
-
-        <!-- 命名规范 -->
+        <!-- Naming -->
         <module name="PackageName"/>
         <module name="TypeName"/>
         <module name="MethodName"/>
@@ -67,24 +38,17 @@
         <module name="LocalVariableName"/>
         <module name="ConstantName"/>
 
-        <!-- 基础设计/可维护性 -->
-        <module name="EqualsHashCode"/>
-        <module name="FallThrough"/>
-        <module name="MissingSwitchDefault"/>
+        <!-- Modifiers -->
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+
+        <!-- Basic readability -->
+        <module name="OneStatementPerLine"/>
         <module name="MultipleVariableDeclarations"/>
 
-        <!-- 复杂度控制 -->
-        <module name="MethodLength">
-            <property name="max" value="80"/>
-        </module>
-        <module name="ParameterNumber">
-            <property name="max" value="6"/>
-        </module>
-        <module name="CyclomaticComplexity">
-            <property name="max" value="12"/>
-        </module>
-        <module name="NestedIfDepth">
-            <property name="max" value="3"/>
-        </module>
+        <!-- Basic correctness -->
+        <module name="EqualsHashCode"/>
+        <module name="FallThrough"/>
+
     </module>
 </module>

@@ -87,7 +87,8 @@ public class ParcelQueryServiceImpl implements ParcelQueryService {
         var page = parcelRepository.findAll(spec, pageable);
         var recordList = page.getContent().stream().map(this::toParcelDTO).toList();
 
-        return PageResponse.<ParcelBaseInfoDTO>builder().recordList(recordList).total(page.getTotalElements()).totalPage(page.getTotalPages()).pageNum(query.getPageNum()).pageSize(query.getPageSize()).build();
+        return PageResponse.<ParcelBaseInfoDTO>builder().recordList(recordList).total(page.getTotalElements())
+                .totalPage(page.getTotalPages()).pageNum(query.getPageNum()).pageSize(query.getPageSize()).build();
     }
 
     private ParcelBaseInfoDTO toParcelDTO(Parcel parcel) {

@@ -92,7 +92,13 @@ public class PackageBuilder {
         }
 
         parcel.setLatestOutboundTime(nowInstant);
-        return ParcelPackDTO.builder().waybillCode(parcel.getWaybillCode()).waybillRegistry(waybillRegistry).parcel(parcel).parcelOpRecord(parcelOpRecordDO).parcelOpSyncEvent(opSyncEvent).parcelNotifyEvent(notifyEvent).build();
+        return ParcelPackDTO.builder()
+                .waybillCode(parcel.getWaybillCode())
+                .waybillRegistry(waybillRegistry)
+                .parcel(parcel)
+                .parcelOpRecord(parcelOpRecordDO)
+                .parcelOpSyncEvent(opSyncEvent)
+                .parcelNotifyEvent(notifyEvent).build();
     }
 
     public ParcelPackDTO buildTransferParcelPackDTO(Parcel parcel, String shelfCode, String pickupCode) {
@@ -114,7 +120,12 @@ public class PackageBuilder {
         // 短信，app都推送
         notifyEvent.setChannelList(new ArrayList<>(List.of(NotifyChannelEnum.SMS.getDesc(), NotifyChannelEnum.APP.getDesc())));
 
-        return ParcelPackDTO.builder().waybillCode(parcel.getWaybillCode()).parcel(parcel).parcelOpRecord(parcelOpRecordDO).parcelOpSyncEvent(opSyncEvent).parcelNotifyEvent(notifyEvent).build();
+        return ParcelPackDTO.builder()
+                .waybillCode(parcel.getWaybillCode())
+                .parcel(parcel)
+                .parcelOpRecord(parcelOpRecordDO)
+                .parcelOpSyncEvent(opSyncEvent)
+                .parcelNotifyEvent(notifyEvent).build();
     }
 
     private ParcelOpRecord buildOpRecord(String stationCode, String waybillCode, Instant nowInstant) {

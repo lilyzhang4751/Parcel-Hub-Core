@@ -23,16 +23,14 @@ public interface MessageOutboxRepository extends JpaRepository<MessageOutbox, Lo
             limit :limit
             for update skip locked
             """, nativeQuery = true)
-    List<MessageOutbox> findReadyForPublish(
-            @Param("statuses") List<String> statuses,
-            @Param("now") Instant now,
-            @Param("maxRetry") int maxRetry,
-            @Param("limit") int limit
-    );
+    List<MessageOutbox> findReadyForPublish(@Param("statuses") List<String> statuses,
+                                            @Param("now") Instant now,
+                                            @Param("maxRetry") int maxRetry,
+                                            @Param("limit") int limit);
 
     /*
-    flushAutomatically = true	执行 UPDATE 前，先把当前未 flush 的变更刷到数据库
-    clearAutomatically = true	执行 UPDATE 后，清空一级缓存，避免后续查到旧实体
+    flushAutomatically = true；执行 UPDATE 前，先把当前未 flush 的变更刷到数据库
+    clearAutomatically = true；执行 UPDATE 后，清空一级缓存，避免后续查到旧实体
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = """

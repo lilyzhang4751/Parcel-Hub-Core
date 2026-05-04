@@ -370,3 +370,6 @@ Current intentional boundaries:
 - Extract notification processing as a separate service
 - Add database indexes based on query plans and load-test results
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
