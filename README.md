@@ -347,23 +347,6 @@ The project uses several test levels:
 
 The goal is not only code coverage, but confidence that the service works with realistic external dependencies.
 
-## Interview Talking Points
-
-This project can be used to discuss:
-
-- Why a modular monolith was chosen before microservices
-- How REST controllers are separated from application services
-- How JWT authentication and role authorization are implemented
-- Why passwords are hashed and sensitive fields are encrypted
-- How Flyway keeps database schema changes controlled
-- How transactional outbox improves database-message consistency
-- How Kafka producer idempotence and consumer acknowledgement affect reliability
-- How Redis / Redisson can be used for locking or coordination
-- How Testcontainers improves integration test realism
-- How Actuator, Prometheus, and Grafana support production diagnostics
-- How GitHub Actions can enforce build and test quality gates
-- What would be extracted first if the system evolved into microservices
-
 ## Scope Boundaries
 
 This project focuses on backend engineering quality rather than complete logistics business coverage.
