@@ -244,7 +244,7 @@ Services:
 ### Run Tests
 
 ```bash
-./mvnw clean verify
+./mvnw -B clean verify
 ```
 
 The test workflow is designed to run:
