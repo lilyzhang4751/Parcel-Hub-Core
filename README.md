@@ -1,4 +1,4 @@
-````markdown
+
 # Parcel-Hub-Core
 
 A production-oriented parcel hub backend built with Java and Spring Boot.  
@@ -369,4 +369,4 @@ Current intentional boundaries:
 - Add Kubernetes manifests or Helm chart
 - Extract notification processing as a separate service
 - Add database indexes based on query plans and load-test results
-````
+
