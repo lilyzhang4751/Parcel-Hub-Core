@@ -25,7 +25,7 @@ jobs:
           cache: maven
 
       - name: Package application
-        run: mvn -B clean package -DskipTests
+        run: ./mvnw -B clean package -DskipTests -Dcheckstyle.skip=true
 
       - name: Check jar
         run: ls -lh target/*.jar

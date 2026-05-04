@@ -30,7 +30,7 @@ jobs:
 
       - name: Run all tests
         # 执行单元测试 + 集成测试；临时跳过 Checkstyle 阻塞
-        run: mvn -B clean verify -Dcheckstyle.skip=true
+        run: ./mvnw -B clean verify
 
       - name: Show test reports
         # 失败时直接把测试报告打印到 GitHub Actions 日志里
