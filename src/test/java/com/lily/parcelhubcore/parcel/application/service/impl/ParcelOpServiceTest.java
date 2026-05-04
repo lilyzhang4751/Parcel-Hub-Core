@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import com.lily.parcelhubcore.parcel.application.command.ParcelInBoundCommand;
@@ -28,10 +29,12 @@ import com.lily.parcelhubcore.parcel.domain.service.ParcelDomainService;
 import com.lily.parcelhubcore.parcel.domain.service.PickupCodeService;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.WaybillRegistry;
+import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.ParcelRepository;
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.WaybillRegistryRepository;
 import com.lily.parcelhubcore.shared.cache.CacheService;
 import com.lily.parcelhubcore.shared.enums.OperateTypeEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
+import com.lily.parcelhubcore.shared.enums.WaybillStatusEnum;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.shared.lock.Lock;
 import com.lily.parcelhubcore.shared.util.CurrentUserUtil;
@@ -44,6 +47,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ParcelOpServiceTest {
+
+    private static final String waybillCode = "WB123";
+    private static final String stationCode = "STATION1";
+    private static Parcel findParcel;
+
+    static {
+        findParcel = new Parcel();
+        findParcel.setWaybillCode(waybillCode);
+        findParcel.setStationCode(stationCode);
+        findParcel.setStatus(WaybillStatusEnum.INBOUND.getCode());
+    }
 
     @InjectMocks
     private ParcelOpServiceImpl parcelOpService;
@@ -65,6 +79,9 @@ class ParcelOpServiceTest {
 
     @Mock
     private WaybillRegistryRepository waybillRegistryRepository;
+
+    @Mock
+    private ParcelRepository parcelRepository;
 
     @Mock
     private ParcelPackDTO packDTO;
@@ -280,17 +297,19 @@ class ParcelOpServiceTest {
     @Test
     void outBoundOrReturn_shouldCompleteSuccessfully_whenAllConditionsMet() {
         // given
-        String waybillCode = "WB123";
         OperateTypeEnum operateType = OperateTypeEnum.OUT;
-        String stationCode = "STATION1";
+        Parcel testParcel = new Parcel();
+        testParcel.setWaybillCode(waybillCode);
+        testParcel.setStationCode(stationCode);
+        testParcel.setStatus(WaybillStatusEnum.INBOUND.getCode());
 
         try (MockedStatic<CurrentUserUtil> mockedCurrentUserUtil = mockStatic(CurrentUserUtil.class)) {
             mockedCurrentUserUtil.when(CurrentUserUtil::getStationCode).thenReturn(stationCode);
             when(lock.tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
+            when(parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode)).thenReturn(Optional.of(testParcel));
             when(waybillRegistryRepository.findByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode())).thenReturn(this.waybillRegistry);
             when(this.waybillRegistry.getStationCode()).thenReturn(stationCode);
-            when(parcelDomainService.getInboundParcelDO(stationCode, waybillCode)).thenReturn(this.parcel);
-            when(packageBuilder.buildParcelPackByType(this.waybillRegistry, this.parcel, operateType)).thenReturn(this.packDTO);
+            when(packageBuilder.buildParcelPackByType(this.waybillRegistry, testParcel, operateType)).thenReturn(this.packDTO);
 
             // when
             parcelOpService.outBoundOrReturn(waybillCode, operateType);
@@ -298,23 +317,67 @@ class ParcelOpServiceTest {
             // then
             verify(lock).tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS));
             verify(lock).unlock(anyString());
+            verify(parcelRepository).findByStationCodeAndWaybillCode(stationCode, waybillCode);
             verify(waybillRegistryRepository).findByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode());
-            verify(parcelDomainService).getInboundParcelDO(stationCode, waybillCode);
-            verify(packageBuilder).buildParcelPackByType(this.waybillRegistry, this.parcel, operateType);
+            verify(packageBuilder).buildParcelPackByType(this.waybillRegistry, testParcel, operateType);
             verify(parcelDomainService).updateDBAndSendMsg(this.packDTO);
+        }
+    }
+
+    @Test
+    void outBoundOrReturn_shouldCompleteSuccessfully_whenIdempotent() {
+        // given
+        OperateTypeEnum operateType = OperateTypeEnum.OUT;
+        findParcel.setStatus(WaybillStatusEnum.OUTBOUND.getCode());
+
+        try (MockedStatic<CurrentUserUtil> mockedCurrentUserUtil = mockStatic(CurrentUserUtil.class)) {
+            mockedCurrentUserUtil.when(CurrentUserUtil::getStationCode).thenReturn(stationCode);
+            when(lock.tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
+            when(parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode)).thenReturn(Optional.of(findParcel));
+
+            // when
+            parcelOpService.outBoundOrReturn(waybillCode, operateType);
+
+            verify(lock).tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS));
+            verify(lock).unlock(anyString());
+            verify(parcelRepository).findByStationCodeAndWaybillCode(stationCode, waybillCode);
+            verifyNoMoreInteractions(waybillRegistryRepository, parcelDomainService, packageBuilder);
+        }
+    }
+
+    @Test
+    void outBoundOrReturn_shouldThrowBusinessException_whenWaybillCodeNotExist() {
+        // given
+        OperateTypeEnum operateType = OperateTypeEnum.OUT;
+
+        try (MockedStatic<CurrentUserUtil> mockedCurrentUserUtil = mockStatic(CurrentUserUtil.class)) {
+            mockedCurrentUserUtil.when(CurrentUserUtil::getStationCode).thenReturn(stationCode);
+            when(lock.tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
+            when(parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode)).thenReturn(java.util.Optional.empty());
+
+            // when & then
+            BusinessException exception = assertThrows(BusinessException.class, () -> parcelOpService.outBoundOrReturn(waybillCode, operateType));
+            assertEquals(PARCEL_NOT_EXIST, exception.getCommonErrorCode());
+            verify(lock).tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS));
+            verify(lock).unlock(anyString());
+            verify(parcelRepository).findByStationCodeAndWaybillCode(stationCode, waybillCode);
+            verifyNoMoreInteractions(waybillRegistryRepository, parcelDomainService, packageBuilder);
         }
     }
 
     @Test
     void outBoundOrReturn_shouldThrowBusinessException_whenWaybillRegistryNotFound() {
         // given
-        String waybillCode = "WB123";
         OperateTypeEnum operateType = OperateTypeEnum.OUT;
-        String stationCode = "STATION1";
+        Parcel testParcel = new Parcel();
+        testParcel.setWaybillCode(waybillCode);
+        testParcel.setStationCode(stationCode);
+        testParcel.setStatus(WaybillStatusEnum.INBOUND.getCode());
 
         try (MockedStatic<CurrentUserUtil> mockedCurrentUserUtil = mockStatic(CurrentUserUtil.class)) {
             mockedCurrentUserUtil.when(CurrentUserUtil::getStationCode).thenReturn(stationCode);
             when(lock.tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
+            when(parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode)).thenReturn(Optional.of(testParcel));
             when(waybillRegistryRepository.findByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode())).thenReturn(null);
 
             // when & then
@@ -322,6 +385,7 @@ class ParcelOpServiceTest {
             assertEquals(PARCEL_NOT_EXIST, exception.getCommonErrorCode());
             verify(lock).tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS));
             verify(lock).unlock(anyString());
+            verify(parcelRepository).findByStationCodeAndWaybillCode(stationCode, waybillCode);
             verify(waybillRegistryRepository).findByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode());
             verifyNoMoreInteractions(parcelDomainService, packageBuilder);
         }
@@ -330,13 +394,16 @@ class ParcelOpServiceTest {
     @Test
     void outBoundOrReturn_shouldThrowBusinessException_whenStationCodeMismatch() {
         // given
-        String waybillCode = "WB123";
         OperateTypeEnum operateType = OperateTypeEnum.OUT;
-        String stationCode = "STATION1";
+        Parcel testParcel = new Parcel();
+        testParcel.setWaybillCode(waybillCode);
+        testParcel.setStationCode(stationCode);
+        testParcel.setStatus(WaybillStatusEnum.INBOUND.getCode());
 
         try (MockedStatic<CurrentUserUtil> mockedCurrentUserUtil = mockStatic(CurrentUserUtil.class)) {
             mockedCurrentUserUtil.when(CurrentUserUtil::getStationCode).thenReturn(stationCode);
             when(lock.tryLock(anyString(), anyLong(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
+            when(parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode)).thenReturn(Optional.of(testParcel));
             when(waybillRegistryRepository.findByWaybillCodeAndStatus(waybillCode, WaybillRegistryStatusEnum.OCCUPIED.getCode())).thenReturn(this.waybillRegistry);
             when(this.waybillRegistry.getStationCode()).thenReturn("DIFFERENT_STATION");
 
