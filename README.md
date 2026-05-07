@@ -363,12 +363,9 @@ Current intentional boundaries:
 
 - Add OpenTelemetry tracing with Tempo or Jaeger
 - Add centralized structured logging
-- Add idempotency keys for selected external-facing APIs
 - Add more explicit domain state machine tests
-- Add API contract tests
 - Add Kubernetes manifests or Helm chart
 - Extract notification processing as a separate service
-- Add database indexes based on query plans and load-test results
 
 ## License
 
