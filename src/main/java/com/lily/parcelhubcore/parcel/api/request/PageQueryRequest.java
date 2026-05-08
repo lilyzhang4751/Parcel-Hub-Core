@@ -41,7 +41,7 @@ public class PageQueryRequest {
     @Max(100)
     private Integer pageSize;
 
-    @AssertTrue(message = "shelfCode、pickupCode、mobile、waybillStatus、notifyStatus 不能同时为空")
+    @AssertTrue(message = "shelfCode、pickupCode、waybillStatus、notifyStatus 不能同时为空")
     public boolean isAtLeastOneConditionProvided() {
         return StringUtils.hasText(shelfCode)
                 || StringUtils.hasText(pickupCode)

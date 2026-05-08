@@ -48,7 +48,7 @@ public class PackageBuilder {
         var opSyncEvent = buildParcelOpSyncEvent(parcelOpRecordDO);
 
         // 包裹通知记录
-        var notifyEvent = buildNotifyEvent(stationCode, waybillCode, nowInstant, command.getPickupCode());
+        var notifyEvent = buildNotifyEvent(stationCode, waybillCode, nowInstant, command.getPickupCode(), command.getRecipientMobile());
         // 短信，app都推送
         notifyEvent.setChannelList(new ArrayList<>(List.of(NotifyChannelEnum.SMS.getDesc(), NotifyChannelEnum.APP.getDesc())));
 
@@ -79,7 +79,7 @@ public class PackageBuilder {
         parcelOpRecordDO.setDetail(operateTypeEnum.getDesc());
         var opSyncEvent = buildParcelOpSyncEvent(parcelOpRecordDO);
         // 包裹通知记录
-        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant, parcel.getPickupCode());
+        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant, parcel.getPickupCode(), parcel.getRecipientMobile());
         // app推送
         notifyEvent.setChannelList(new ArrayList<>(List.of(NotifyChannelEnum.APP.getDesc())));
 
@@ -110,11 +110,11 @@ public class PackageBuilder {
         // 包裹操作记录
         var parcelOpRecordDO = buildOpRecord(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant);
         parcelOpRecordDO.setOpType(OperateTypeEnum.TRANSFER.getCode());
-        var desc = String.format(TRANSFER_DESC, oldShelfCode, shelfCode, oldPickupCode, parcel);
+        var desc = String.format(TRANSFER_DESC, oldShelfCode, shelfCode, oldPickupCode, parcel.getPickupCode());
         parcelOpRecordDO.setDetail(desc);
         var opSyncEvent = buildParcelOpSyncEvent(parcelOpRecordDO);
         // 包裹通知记录
-        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant, pickupCode);
+        var notifyEvent = buildNotifyEvent(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant, pickupCode, parcel.getRecipientMobile());
         // 短信，app都推送
         notifyEvent.setChannelList(new ArrayList<>(List.of(NotifyChannelEnum.SMS.getDesc(), NotifyChannelEnum.APP.getDesc())));
 
@@ -137,7 +137,7 @@ public class PackageBuilder {
         return parcelOpRecordDO;
     }
 
-    private ParcelNotifyEvent buildNotifyEvent(String stationCode, String waybillCode, Instant nowInstant, String pickupCode) {
+    private ParcelNotifyEvent buildNotifyEvent(String stationCode, String waybillCode, Instant nowInstant, String pickupCode, String mobile) {
         var notifyEvent = new ParcelNotifyEvent();
         notifyEvent.setStationCode(stationCode);
         notifyEvent.setWaybillCode(waybillCode);
@@ -146,6 +146,7 @@ public class PackageBuilder {
         notifyEvent.setOperatorName(CurrentUserUtil.getUsername());
         notifyEvent.setNotifyTime(nowInstant);
         notifyEvent.setEventId(UUID.randomUUID().toString());
+        notifyEvent.setMobile(mobile);
         return notifyEvent;
     }
 

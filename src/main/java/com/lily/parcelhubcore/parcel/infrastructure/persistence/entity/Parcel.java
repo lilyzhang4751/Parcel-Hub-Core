@@ -2,7 +2,9 @@ package com.lily.parcelhubcore.parcel.infrastructure.persistence.entity;
 
 import java.time.Instant;
 
+import com.lily.parcelhubcore.shared.converter.MobileEncryptConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,6 +46,7 @@ public class Parcel {
     @Column(name = "recipient_name")
     private String recipientName;
 
+    @Convert(converter = MobileEncryptConverter.class)
     @Column(name = "recipient_mobile")
     private String recipientMobile;
 

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalTime;
 
+import com.lily.parcelhubcore.shared.converter.MobileEncryptConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,6 +45,7 @@ public class StationInfoDO {
     @Column(name = "principal")
     private String principal;
 
+    @Convert(converter = MobileEncryptConverter.class)
     @Column(name = "contact_mobile")
     private String contactMobile;
 

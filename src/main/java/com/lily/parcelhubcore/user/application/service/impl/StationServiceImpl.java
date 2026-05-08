@@ -9,7 +9,7 @@ import com.lily.parcelhubcore.shared.exception.BusinessException;
 import com.lily.parcelhubcore.user.application.command.StationRegisterCommand;
 import com.lily.parcelhubcore.user.application.command.UserRegisterCommand;
 import com.lily.parcelhubcore.user.application.service.LoginService;
-import com.lily.parcelhubcore.user.application.service.MobileCryptoService;
+import com.lily.parcelhubcore.user.application.service.MobileHashService;
 import com.lily.parcelhubcore.user.application.service.StationService;
 import com.lily.parcelhubcore.user.application.util.CodeGenerator;
 import com.lily.parcelhubcore.user.infrastructure.persistence.entity.StationInfoDO;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StationServiceImpl implements StationService {
 
     @Resource
-    private MobileCryptoService mobileCryptoService;
+    private MobileHashService mobileHashService;
 
     @Resource
     private StationInfoRepository stationInfoRepository;
@@ -34,7 +34,7 @@ public class StationServiceImpl implements StationService {
     @Transactional
     public String register(StationRegisterCommand command) {
         // 查询手机号是否重复
-        var mobileHash = mobileCryptoService.hash(command.getContactMobile());
+        var mobileHash = mobileHashService.hash(command.getContactMobile());
         if (stationInfoRepository.existsByMobileHash(mobileHash)) {
             throw new BusinessException(MOBILE_DUPLICATE);
         }
@@ -47,8 +47,7 @@ public class StationServiceImpl implements StationService {
         station.setLatitude(command.getLatitude());
         station.setBusinessStartTime(command.getBusinessStartTime());
         station.setBusinessEndTime(command.getBusinessEndTime());
-        // mobile encode
-        station.setContactMobile(mobileCryptoService.encryptMobile(command.getContactMobile()));
+        station.setContactMobile(command.getContactMobile());
         station.setMobileHash(mobileHash);
         var id = stationInfoRepository.save(station).getId();
         var stationCode = CodeGenerator.buildStationCode(id);
@@ -70,8 +69,6 @@ public class StationServiceImpl implements StationService {
         if (station == null) {
             throw new BusinessException(STATION_NOT_EXIST);
         }
-        // mobile decode
-        station.setContactMobile(mobileCryptoService.decryptMobile(station.getContactMobile()));
         return station;
     }
 

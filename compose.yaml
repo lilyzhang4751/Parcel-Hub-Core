@@ -96,7 +96,7 @@ services:
       SPRING_MAIN_LOG_STARTUP_INFO: "true"
       DEBUG: "true"
 
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/parcelhub
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/parcel_hub
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
