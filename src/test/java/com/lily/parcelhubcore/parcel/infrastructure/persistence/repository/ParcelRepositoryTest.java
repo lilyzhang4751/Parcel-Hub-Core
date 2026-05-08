@@ -8,12 +8,18 @@ import java.util.List;
 import java.util.Optional;
 
 import com.lily.parcelhubcore.parcel.infrastructure.persistence.entity.Parcel;
+import com.lily.parcelhubcore.shared.converter.MobileEncryptConverter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -22,6 +28,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @ActiveProfiles("test")
 @DataJpaTest
 @Testcontainers
+@Import(MobileEncryptConverter.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ParcelRepositoryTest {
 
@@ -29,7 +36,6 @@ class ParcelRepositoryTest {
     @ServiceConnection
     static PostgreSQLContainer postgres =
             new PostgreSQLContainer("postgres:16-alpine");
-
     @Autowired
     private ParcelRepository parcelRepository;
 
@@ -220,5 +226,13 @@ class ParcelRepositoryTest {
         // when & then
         assertThatThrownBy(() -> parcelRepository.saveAndFlush(parcel2))
                 .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        TextEncryptor textEncryptor() {
+            return Encryptors.text("test-password", "1234567890abcdef");
+        }
     }
 }
