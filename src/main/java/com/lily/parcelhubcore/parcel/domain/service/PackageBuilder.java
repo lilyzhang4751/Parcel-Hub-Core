@@ -47,12 +47,6 @@ public class PackageBuilder {
         parcelOpRecordDO.setDetail(OperateTypeEnum.IN.getDesc());
         var opSyncEvent = buildParcelOpSyncEvent(parcelOpRecordDO);
 
-        // 包裹表
-        var parcelDO = new Parcel();
-        BeanUtils.copyProperties(command, parcelDO);
-        parcelDO.setStatus(WaybillStatusEnum.INBOUND.getCode());
-        parcelDO.setLatestInboundTime(nowInstant);
-
         // 包裹通知记录
         var notifyEvent = buildNotifyEvent(stationCode, waybillCode, nowInstant, command.getPickupCode());
         // 短信，app都推送
@@ -61,6 +55,11 @@ public class PackageBuilder {
         var pack = ParcelPackDTO.builder().waybillRegistry(waybillRegistryDO).parcelOpRecord(parcelOpRecordDO)
                 .parcelOpSyncEvent(opSyncEvent).parcelNotifyEvent(notifyEvent).waybillCode(waybillRegistryDO.getWaybillCode()).build();
 
+        // 包裹表
+        var parcelDO = new Parcel();
+        BeanUtils.copyProperties(command, parcelDO);
+        parcelDO.setStatus(WaybillStatusEnum.INBOUND.getCode());
+        parcelDO.setLatestInboundTime(nowInstant);
         // 查看包裹是首次入库还是多次入库
         var oldParcel = parcelRepository.findByStationCodeAndWaybillCode(stationCode, waybillCode);
 
@@ -108,7 +107,6 @@ public class PackageBuilder {
         parcel.setShelfCode(shelfCode);
         parcel.setPickupCode(pickupCode);
         var nowInstant = TimeConvertUtils.toInstant(System.currentTimeMillis());
-        parcel.setLatestOutboundTime(nowInstant);
         // 包裹操作记录
         var parcelOpRecordDO = buildOpRecord(parcel.getStationCode(), parcel.getWaybillCode(), nowInstant);
         parcelOpRecordDO.setOpType(OperateTypeEnum.TRANSFER.getCode());

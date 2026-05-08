@@ -16,6 +16,7 @@ import com.lily.parcelhubcore.parcel.infrastructure.persistence.repository.Waybi
 import com.lily.parcelhubcore.shared.enums.WaybillRegistryStatusEnum;
 import com.lily.parcelhubcore.shared.enums.WaybillStatusEnum;
 import com.lily.parcelhubcore.shared.exception.BusinessException;
+import com.lily.parcelhubcore.user.application.service.MobileCryptoService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,7 @@ public class ParcelDomainService {
 
     @Transactional
     public void updateDBAndSendMsg(ParcelPackDTO packDTO) {
+        // save操作，有主键id的时候，更新；没有则插入
         if (packDTO.getWaybillRegistry() != null) {
             waybillRegistryRepository.save(packDTO.getWaybillRegistry());
         }

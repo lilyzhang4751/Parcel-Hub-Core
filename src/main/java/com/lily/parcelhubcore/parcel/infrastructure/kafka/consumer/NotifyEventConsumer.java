@@ -49,6 +49,14 @@ public class NotifyEventConsumer {
         return !channelList.contains(channelEnum.getDesc());
     }
 
+    protected boolean isAlreadyProcessed(ParcelNotifyEvent event, NotifyChannelEnum channelEnum) {
+        var exist = parcelNotifyRecordRepository.existsByUniqueIdAndChannel(event.getEventId(), channelEnum.getDesc());
+        if (exist) {
+            log.warn("[NotifyEventConsumer][消息已经处理过了不处理][event={}]", JSON.toJSON(event));
+        }
+        return exist;
+    }
+
     protected void saveParcelNotifyEvent(ParcelNotifyEvent event, NotifyChannelEnum channel) {
         var notifyRecord = new ParcelNotifyRecord();
         BeanUtils.copyProperties(event, notifyRecord);

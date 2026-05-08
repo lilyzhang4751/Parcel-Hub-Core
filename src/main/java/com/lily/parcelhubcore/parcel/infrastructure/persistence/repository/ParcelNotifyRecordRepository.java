@@ -12,4 +12,6 @@ public interface ParcelNotifyRecordRepository extends JpaRepository<ParcelNotify
 
     List<ParcelNotifyRecord> findByStationCodeAndWaybillCode(String stationCode, String waybillCode);
 
+    boolean existsByUniqueIdAndChannel(String uniqueId, String channel);
+
 }

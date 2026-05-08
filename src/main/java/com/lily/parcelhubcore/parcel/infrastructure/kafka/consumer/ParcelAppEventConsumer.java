@@ -34,8 +34,14 @@ public class ParcelAppEventConsumer extends NotifyEventConsumer {
         if (notNeedHandle(event, NotifyChannelEnum.APP)) {
             return;
         }
-        saveParcelNotifyEvent(event, NotifyChannelEnum.APP);
+        // 即使缓存没有设置，但是业务已经处理完成，这种情况下也要设置幂等
+        if (isAlreadyProcessed(event, NotifyChannelEnum.APP)) {
+            setAlreadyConsumed(eventId);
+            return;
+        }
+
         // 实际发送短信或app推送，需要三方接口支持，此处省略
+        saveParcelNotifyEvent(event, NotifyChannelEnum.APP);
 
         // 处理成功设置缓存
         setAlreadyConsumed(eventId);
