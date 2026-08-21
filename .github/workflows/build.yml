@@ -10,25 +10,12 @@ permissions:
   packages: write
 
 jobs:
-  package:
+  image:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
-
-      - name: Package application
-        run: ./mvnw -B clean package -DskipTests -Dcheckstyle.skip=true
-
-      - name: Check jar
-        run: ls -lh target/*.jar
 
       - name: Set Docker image name
         id: image
@@ -49,6 +36,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ${{ steps.image.outputs.name }}:${{ github.sha }}
             ${{ steps.image.outputs.name }}:latest
