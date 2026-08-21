@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WaybillRegistryRepository extends JpaRepository<WaybillRegistry, String>, JpaSpecificationExecutor<WaybillRegistry> {
+public interface WaybillRegistryRepository extends JpaRepository<WaybillRegistry, Long>, JpaSpecificationExecutor<WaybillRegistry> {
 
     boolean existsByWaybillCodeAndStatus(String waybillCode, int status);
 
