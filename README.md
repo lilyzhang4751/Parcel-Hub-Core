@@ -227,8 +227,27 @@ Require `MANAGER`.
 
 ### Start Full Local Environment
 
+For the first start, or after changing application source code or build files,
+build the image and start the services in the background:
+
 ```bash
-docker compose up --build
+docker compose up --build -d
+```
+
+The application image uses a multi-stage Docker build, so this command also
+downloads the Maven dependencies and packages the application. A local Maven
+build or an existing `target` directory is not required.
+
+For later starts with the existing image, no Maven packaging is performed:
+
+```bash
+docker compose up -d
+```
+
+To stop the environment:
+
+```bash
+docker compose down
 ```
 
 Services:
@@ -291,8 +310,8 @@ For production-like usage, do not reuse development secrets. Provide secrets thr
 The repository contains GitHub Actions workflows for:
 
 - running tests on push and pull request
-- packaging the application
-- building and pushing Docker images to GitHub Container Registry
+- packaging the application once as part of the Docker image build
+- pushing Docker images to GitHub Container Registry
 - deployment-oriented Compose configuration
 
 Typical CI command:
@@ -307,10 +326,7 @@ Image build workflow:
 push to main
     |
     v
-Maven package
-    |
-    v
-Docker build
+Docker build (Maven package in the builder stage)
     |
     v
 Push image to GHCR
